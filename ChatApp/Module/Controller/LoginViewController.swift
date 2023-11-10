@@ -117,13 +117,23 @@ class LoginViewController: UIViewController {
     
     
     private var cancellables = Set<AnyCancellable>()
+    private let viewModel: LoginViewModel
     
     
     //MARK: - lifecycle
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
+        bind()
         observePublisher()
     }
     
@@ -156,6 +166,15 @@ class LoginViewController: UIViewController {
             make.centerX.equalTo(view.snp.centerX)
             make.leading.equalTo(view.snp.leading).offset(30)
         }
+    }
+    
+    private func bind() {
+        let input = LoginViewModel.Input(emailPublisher: emailTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
+                                         passwordPublisher: passwordTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
+                                         forgotPasswordTapPublisher: lostPasswordButton.tapPublisher.eraseToAnyPublisher(),
+                                         registerTapPublisher: registerButton.tapPublisher.eraseToAnyPublisher(),
+                                         loginTapPublisher: loginButton.tapPublisher.eraseToAnyPublisher())
+        viewModel.bind(input: input)
     }
     
     private func observePublisher() {
@@ -212,7 +231,7 @@ struct MainViewControllerPresentable: UIViewControllerRepresentable {
         
     }
     func makeUIViewController(context: Context) -> some UIViewController {
-        LoginViewController()
+        LoginViewController(viewModel: LoginViewModel())
     }
 }
 
