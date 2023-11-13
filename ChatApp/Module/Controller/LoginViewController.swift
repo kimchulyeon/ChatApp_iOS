@@ -134,13 +134,16 @@ class LoginViewController: UIViewController {
         
         setupUI()
         bind()
-        observePublisher()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
         view.endEditing(true)
+    }
+    
+    deinit {
+        resetPlaceholder()
     }
     
     
@@ -171,34 +174,22 @@ class LoginViewController: UIViewController {
     private func bind() {
         let input = LoginViewModel.Input(emailPublisher: emailTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
                                          passwordPublisher: passwordTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
-                                         forgotPasswordTapPublisher: lostPasswordButton.tapPublisher.eraseToAnyPublisher(),
-                                         registerTapPublisher: registerButton.tapPublisher.eraseToAnyPublisher(),
                                          loginTapPublisher: loginButton.tapPublisher.eraseToAnyPublisher())
-        viewModel.bind(input: input)
-    }
-    
-    private func observePublisher() {
-        loginButton.tapPublisher
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let weakSelf = self else { return }
-                
-                let email = weakSelf.emailTextField.text ?? ""
-                let password = weakSelf.passwordTextField.text ?? ""
-                let isEmailValid = !email.isEmpty
-                let isPasswordValid = !password.isEmpty
-                
-                if isEmailValid == false {
-                    weakSelf.emailTextField.setPlaceholder(text: "Email", color: .systemRed)
-                }
-                
-                if isPasswordValid == false {
-                    weakSelf.passwordTextField.setPlaceholder(text: "Password", color: .systemRed)
-                }
-                
-                if isEmailValid && isPasswordValid {
-                    weakSelf.resetPlaceholder()
-                    weakSelf.handleLogin()
+        
+        let output = viewModel.bind(input: input)
+        
+        output.isLoadingPublisher
+            .sink { [unowned self] isLoading in
+                loginButton.isEnabled = !isLoading
+            }
+            .store(in: &cancellables)
+        
+        
+        output.isValidPublisher
+            .sink { [unowned self] isValid in
+                if isValid == false {
+                    emailTextField.setPlaceholder(text: "Email", color: .systemRed)
+                    passwordTextField.setPlaceholder(text: "Password", color: .systemRed)
                 }
             }
             .store(in: &cancellables)
@@ -216,12 +207,10 @@ class LoginViewController: UIViewController {
     private func handleForgotPassword() {
         print("PASSWORD")
     }
-    
-    private func handleLogin() {
-        print("LOGIN")
-    }
-    
 }
+
+
+
 
 #if DEBUG
 import SwiftUI
