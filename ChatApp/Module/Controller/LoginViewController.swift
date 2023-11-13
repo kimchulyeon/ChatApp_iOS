@@ -62,6 +62,10 @@ class LoginViewController: UIViewController {
         btn.titleLabel?.font = ThemeFont.bold(size: 18)
         btn.backgroundColor = ThemeColor.primary
         btn.addCornerRadius(radius: 8)
+        let action = UIAction { [unowned self] _ in
+            handleLogin()
+        }
+        btn.addAction(action, for: .touchUpInside)
         return btn
     }()
     
@@ -120,6 +124,7 @@ class LoginViewController: UIViewController {
     private let viewModel: LoginViewModel
     
     
+    
     //MARK: - lifecycle
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -134,7 +139,6 @@ class LoginViewController: UIViewController {
         
         setupUI()
         bind()
-        observePublisher()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -170,39 +174,11 @@ class LoginViewController: UIViewController {
     
     private func bind() {
         let input = LoginViewModel.Input(emailPublisher: emailTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
-                                         passwordPublisher: passwordTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher(),
-                                         forgotPasswordTapPublisher: lostPasswordButton.tapPublisher.eraseToAnyPublisher(),
-                                         registerTapPublisher: registerButton.tapPublisher.eraseToAnyPublisher(),
-                                         loginTapPublisher: loginButton.tapPublisher.eraseToAnyPublisher())
+                                         passwordPublisher: passwordTextField.textPublisher.replaceNil(with: "").eraseToAnyPublisher())
+        
         viewModel.bind(input: input)
     }
     
-    private func observePublisher() {
-        loginButton.tapPublisher
-            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let weakSelf = self else { return }
-                
-                let email = weakSelf.emailTextField.text ?? ""
-                let password = weakSelf.passwordTextField.text ?? ""
-                let isEmailValid = !email.isEmpty
-                let isPasswordValid = !password.isEmpty
-                
-                if isEmailValid == false {
-                    weakSelf.emailTextField.setPlaceholder(text: "Email", color: .systemRed)
-                }
-                
-                if isPasswordValid == false {
-                    weakSelf.passwordTextField.setPlaceholder(text: "Password", color: .systemRed)
-                }
-                
-                if isEmailValid && isPasswordValid {
-                    weakSelf.resetPlaceholder()
-                    weakSelf.handleLogin()
-                }
-            }
-            .store(in: &cancellables)
-    }
     
     private func resetPlaceholder() {
         emailTextField.setPlaceholder(text: "Email", color: ThemeColor.text)
@@ -218,10 +194,27 @@ class LoginViewController: UIViewController {
     }
     
     private func handleLogin() {
-        print("LOGIN")
+        viewModel.handleLogin()
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    print("로그인 성공 이동 🚀🚀🚀🚀🚀🚀")
+                case .failure(error: let error):
+                    print("로그인 실패 ❌❌❌❌❌❌")
+                    if error == .textFieldEmpty {
+                        self?.emailTextField.setPlaceholder(text: "Email", color: .systemRed)
+                        self?.passwordTextField.setPlaceholder(text: "Password", color: .systemRed)
+                    }
+                    
+                }
+            }
+            .store(in: &cancellables)
     }
     
 }
+
+
+
 
 #if DEBUG
 import SwiftUI
