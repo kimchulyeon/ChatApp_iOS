@@ -9,12 +9,13 @@ import UIKit
 import SnapKit
 import Combine
 import CombineCocoa
+import AuthenticationServices
 
 class LoginViewController: UIViewController {
     //MARK: - properties
     private let welcomeLabel: UILabel = {
         let lb = UILabel()
-        lb.text = "HEY, WELCOME"
+        lb.text = "WELCOME"
         lb.font = ThemeFont.bold(size: 20)
         lb.tintColor = ThemeColor.text
         return lb
@@ -98,13 +99,21 @@ class LoginViewController: UIViewController {
     }()
     
     private lazy var hButtonStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [
-            lostPasswordButton, registerButton
-        ])
+        let sv = UIStackView(arrangedSubviews: [lostPasswordButton, registerButton])
         sv.axis = .horizontal
         sv.distribution = .fillEqually
         return sv
     }()
+    
+    private lazy var dividerView = DividerView()
+    
+    private let appleButton: ASAuthorizationAppleIDButton = {
+        let btn = ASAuthorizationAppleIDButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+    
+    private let googleButton = GoogleButton()
     
     private lazy var vStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
@@ -112,10 +121,13 @@ class LoginViewController: UIViewController {
             passwordTextField,
             hButtonStackView,
             loginButton,
+            dividerView,
+            appleButton,
+            googleButton
         ])
         sv.axis = .vertical
         sv.distribution = .fillEqually
-        sv.spacing = 24
+        sv.spacing = 12
         return sv
     }()
     

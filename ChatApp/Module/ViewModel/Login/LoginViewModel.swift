@@ -13,10 +13,10 @@ class LoginViewModel: ViewModelType {
     //MARK: - properties
     private var cancellables = Set<AnyCancellable>()
     
-    @Published private (set) var id: String = ""
+    @Published private (set) var email: String = ""
     @Published private (set) var password: String = ""
     private var isValid: Bool {
-        let idValid = id.trimmingCharacters(in: .whitespaces).isEmpty == false
+        let idValid = email.trimmingCharacters(in: .whitespaces).isEmpty == false
         let pwValid = password.isEmpty == false
         
         return idValid && pwValid
@@ -34,7 +34,7 @@ class LoginViewModel: ViewModelType {
     func bind(input: Input) {
         input.emailPublisher
             .sink { [weak self] email in
-                self?.id = email
+                self?.email = email
             }
             .store(in: &cancellables)
         
