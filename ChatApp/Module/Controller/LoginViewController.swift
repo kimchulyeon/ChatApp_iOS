@@ -192,8 +192,8 @@ class LoginViewController: UIViewController {
     
     
     private func resetPlaceholder() {
-        emailTextField.setPlaceholder(text: "Email", color: ThemeColor.text)
-        passwordTextField.setPlaceholder(text: "Password", color: ThemeColor.text)
+        emailTextField.setPlaceholder(text: "이메일", color: ThemeColor.text)
+        passwordTextField.setPlaceholder(text: "비밀번호", color: ThemeColor.text)
     }
     
     private func handleRegister() {
@@ -213,8 +213,8 @@ class LoginViewController: UIViewController {
                 case .failure(error: let error):
                     print("로그인 실패 ❌❌❌❌❌❌")
                     if error == .textFieldEmpty {
-                        self?.emailTextField.setPlaceholder(text: "Email", color: .systemRed)
-                        self?.passwordTextField.setPlaceholder(text: "Password", color: .systemRed)
+                        self?.emailTextField.setPlaceholder(text: "이메일을 입력해주세요", color: .systemRed)
+                        self?.passwordTextField.setPlaceholder(text: "비밀번호를 입력해주세요", color: .systemRed)
                     }
                     
                 }
