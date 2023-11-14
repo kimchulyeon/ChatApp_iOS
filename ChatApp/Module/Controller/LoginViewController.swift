@@ -15,7 +15,7 @@ class LoginViewController: UIViewController {
     //MARK: - properties
     private let welcomeLabel: UILabel = {
         let lb = UILabel()
-        lb.text = "WELCOME"
+        lb.text = "환영합니다"
         lb.font = ThemeFont.bold(size: 20)
         lb.tintColor = ThemeColor.text
         return lb
@@ -31,8 +31,7 @@ class LoginViewController: UIViewController {
     private lazy var emailTextField: UITextField = {
         let tf = UITextField()
         tf.tintColor = ThemeColor.text
-        tf.placeholder = "Email"
-        tf.setPlaceholder(text: "Email")
+        tf.setPlaceholder(text: "이메일")
         tf.backgroundColor = .white
         tf.font = ThemeFont.regular(size: 16)
         tf.keyboardType = .emailAddress
@@ -46,7 +45,7 @@ class LoginViewController: UIViewController {
     private lazy var passwordTextField: UITextField = {
         let tf = UITextField()
         tf.tintColor = ThemeColor.text
-        tf.setPlaceholder(text: "Password")
+        tf.setPlaceholder(text: "비밀번호")
         tf.isSecureTextEntry = true
         tf.backgroundColor = .white
         tf.font = ThemeFont.regular(size: 16)
@@ -72,7 +71,7 @@ class LoginViewController: UIViewController {
     
     private lazy var lostPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Forget your password?", for: .normal)
+        btn.setTitle("비밀번호를 잃어버렸나요?", for: .normal)
         btn.setTitleColor(ThemeColor.text, for: .normal)
         btn.titleLabel?.font = ThemeFont.regular(size: 14)
         btn.contentHorizontalAlignment = .left
@@ -86,7 +85,7 @@ class LoginViewController: UIViewController {
     
     private lazy var registerButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Go to Register", for: .normal)
+        btn.setTitle("가입하러가기", for: .normal)
         btn.setTitleColor(ThemeColor.text, for: .normal)
         btn.contentHorizontalAlignment = .right
         btn.titleLabel?.font = ThemeFont.regular(size: 14)
