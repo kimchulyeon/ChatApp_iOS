@@ -12,42 +12,28 @@ import CombineCocoa
 class LoginViewModel: ViewModelType {
     //MARK: - properties
     private var cancellables = Set<AnyCancellable>()
-    
-    @Published private (set) var email: String = ""
-    @Published private (set) var password: String = ""
-    private var isValid: Bool {
+
+    @Published var email: String = ""
+    @Published var password: String = ""
+    private var loginValidPublisher: AnyPublisher<Bool, Never> {
         let idValid = email.trimmingCharacters(in: .whitespaces).isEmpty == false
         let pwValid = password.isEmpty == false
-        
-        return idValid && pwValid
+        return Just(idValid && pwValid).eraseToAnyPublisher()
     }
-    
-    struct Input {
-        let emailPublisher: AnyPublisher<String, Never>
-        let passwordPublisher: AnyPublisher<String, Never>
-    }
-    
+
     //MARK: - lifecycle
-    
-    
+
+
     //MARK: - method
-    func bind(input: Input) {
-        input.emailPublisher
-            .sink { [weak self] email in
-                self?.email = email
-            }
-            .store(in: &cancellables)
-        
-        input.passwordPublisher
-            .sink { [weak self] password in
-                self?.password = password
-            }
-            .store(in: &cancellables)
-    }
-    
-    
     func handleLogin() -> AnyPublisher<LoginResult, Never> {
-        guard isValid else { return Just(LoginResult.failure(error: LoginError.textFieldEmpty)).eraseToAnyPublisher() }
-        return Just(LoginResult.success).eraseToAnyPublisher()
+        loginValidPublisher
+            .flatMap { isValid in
+                print("✅")
+                if isValid == false {
+                    return Just(LoginResult.failure(error: LoginError.textFieldEmpty))
+                }
+                return Just(LoginResult.success)
+            }
+            .eraseToAnyPublisher()
     }
 }
