@@ -18,6 +18,7 @@ class RegisterViewController: UIViewController {
         let action = UIAction { [unowned self] _ in handleAddImageButton() }
         btn.addAction(action, for: .touchUpInside)
         btn.setImage(UIImage(named: "plus_photo"), for: .normal)
+        btn.addCornerRadius(radius: 30)
         return btn
     }()
     
