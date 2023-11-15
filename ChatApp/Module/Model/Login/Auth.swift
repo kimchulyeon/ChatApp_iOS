@@ -1,5 +1,5 @@
 //
-//  Login.swift
+//  Auth.swift
 //  ChatApp
 //
 //  Created by chulyeon kim on 11/13/23.
@@ -7,12 +7,13 @@
 
 import Foundation
 
-enum LoginError: Error {
+enum AuthError: Error {
     case unknown
     case textFieldEmpty
+    case passwordDiff
 }
 
-enum LoginResult {
+enum AuthResult {
     case success
-    case failure(error: LoginError)
+    case failure(error: AuthError)
 }

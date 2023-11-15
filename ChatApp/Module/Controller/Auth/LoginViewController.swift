@@ -21,9 +21,9 @@ class LoginViewController: UIViewController {
         return lb
     }()
 
-    private let profileImageView: UIImageView = {
+    private let logoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = #imageLiteral(resourceName: "profile")
+        iv.image = UIImage(named: "chat_logo")
         iv.contentMode = .scaleAspectFit
         return iv
     }()
@@ -59,7 +59,7 @@ class LoginViewController: UIViewController {
 
     private lazy var loginButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Login", for: .normal)
+        btn.setTitle("로그인", for: .normal)
         btn.setTitleColor(.white, for: .normal)
         btn.titleLabel?.font = ThemeFont.bold(size: 18)
         btn.backgroundColor = ThemeColor.secondary
@@ -86,7 +86,7 @@ class LoginViewController: UIViewController {
         btn.setTitle("가입하러가기", for: .normal)
         btn.setTitleColor(ThemeColor.primary, for: .normal)
         btn.contentHorizontalAlignment = .right
-        btn.titleLabel?.font = ThemeFont.regular(size: 14)
+        btn.titleLabel?.font = ThemeFont.demiBold(size: 14)
         btn.addCornerRadius(radius: 8)
         let action = UIAction { [unowned self] _ in
             handleRegister()
@@ -161,23 +161,27 @@ class LoginViewController: UIViewController {
     //MARK: - method
     private func setupUI() {
         view.addSubview(welcomeLabel)
+        welcomeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         welcomeLabel.snp.makeConstraints { make in
             make.top.equalTo(view.snp.topMargin)
             make.centerX.equalToSuperview()
+            make.height.greaterThanOrEqualTo(40)
         }
 
-        view.addSubview(profileImageView)
-        profileImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(50)
+        view.addSubview(logoImageView)
+        logoImageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        logoImageView.snp.makeConstraints { make in
+            make.width.height.lessThanOrEqualTo(150)
             make.centerX.equalTo(view.snp.centerX)
             make.top.equalTo(welcomeLabel.snp.bottom).offset(16)
         }
 
         view.addSubview(vStackView)
         vStackView.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.bottom).offset(30)
+            make.top.equalTo(logoImageView.snp.bottom).offset(30)
             make.centerX.equalTo(view.snp.centerX)
             make.leading.equalTo(view.snp.leading).offset(30)
+            make.bottom.lessThanOrEqualTo(view.snp.bottomMargin).offset(-24)
         }
     }
 
@@ -206,7 +210,8 @@ class LoginViewController: UIViewController {
     }
 
     private func handleRegister() {
-        let registerVC = RegisterViewController()
+        let registVM = RegisterViewModel()
+        let registerVC = RegisterViewController(viewModel: registVM)
         navigationController?.pushViewController(registerVC, animated: true)
     }
 
