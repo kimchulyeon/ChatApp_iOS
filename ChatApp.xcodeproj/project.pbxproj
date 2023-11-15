@@ -19,6 +19,7 @@
 		6E28697C2B04B0460083A6E6 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 6E28697B2B04B0460083A6E6 /* SDWebImage */; };
 		6E28697F2B04B05E0083A6E6 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 6E28697E2B04B05E0083A6E6 /* JGProgressHUD */; };
 		6E2869812B04B5FC0083A6E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */; };
+		6E2869842B04BD2D0083A6E6 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2869832B04BD2D0083A6E6 /* AuthService.swift */; };
 		6E3292872B0342C800D49FBA /* Publisher+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3292862B0342C800D49FBA /* Publisher+Ext.swift */; };
 		6E32928D2B04640A00D49FBA /* TermsTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E32928C2B04640A00D49FBA /* TermsTextView.swift */; };
 		6E32928F2B046A6800D49FBA /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E32928E2B046A6800D49FBA /* RegisterViewModel.swift */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6E2869822B04B7110083A6E6 /* ChatApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatApp.entitlements; sourceTree = "<group>"; };
+		6E2869832B04BD2D0083A6E6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		6E3292862B0342C800D49FBA /* Publisher+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Ext.swift"; sourceTree = "<group>"; };
 		6E32928C2B04640A00D49FBA /* TermsTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsTextView.swift; sourceTree = "<group>"; };
 		6E32928E2B046A6800D49FBA /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 		6E92B62C2AFDD58A004C4591 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				6E2869832B04BD2D0083A6E6 /* AuthService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -476,6 +479,7 @@
 				6E92B64F2B01FCA9004C4591 /* Auth.swift in Sources */,
 				6EEB12F82B02134800C86315 /* GoogleButton.swift in Sources */,
 				6E92B6492AFE2544004C4591 /* LoginViewModel.swift in Sources */,
+				6E2869842B04BD2D0083A6E6 /* AuthService.swift in Sources */,
 				6E32928D2B04640A00D49FBA /* TermsTextView.swift in Sources */,
 				6E32928F2B046A6800D49FBA /* RegisterViewModel.swift in Sources */,
 				6E92B63D2AFDF80D004C4591 /* ThemeColor.swift in Sources */,

@@ -59,14 +59,18 @@ class RegisterViewModel: ViewModelType {
     
     func handleRegister() -> AnyPublisher<AuthResult, Never> {
         registerValidPublisher
-            .flatMap { (valid, passwordCheckValid) in
+            .flatMap { [weak self] (valid, passwordCheckValid) in
                 if valid == false {
                     return Just(AuthResult.failure(error: AuthError.textFieldEmpty))
                 } else if passwordCheckValid == false {
                     return Just(AuthResult.failure(error: AuthError.passwordDiff))
                 }
                 
-                print("여기서 파이어베이스 회원가입 >>>> ")
+                #warning("REGISTER")
+                if let email = self?.email, let password = self?.password, let name = self?.name {
+                    let credential = AuthCredential(email: email, password: password, name: name, image: self?.image ?? UIImage(named: "chat_logo")!)
+                }
+                
                 
                 return Just(AuthResult.success)
             }
