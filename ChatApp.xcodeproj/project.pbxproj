@@ -20,6 +20,9 @@
 		6E28697F2B04B05E0083A6E6 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 6E28697E2B04B05E0083A6E6 /* JGProgressHUD */; };
 		6E2869812B04B5FC0083A6E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */; };
 		6E2869842B04BD2D0083A6E6 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2869832B04BD2D0083A6E6 /* AuthService.swift */; };
+		6E2869872B05A38E0083A6E6 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2869862B05A38E0083A6E6 /* StorageService.swift */; };
+		6E28698A2B05B4E60083A6E6 /* SwiftMessages in Frameworks */ = {isa = PBXBuildFile; productRef = 6E2869892B05B4E60083A6E6 /* SwiftMessages */; };
+		6E28698D2B05C1850083A6E6 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E28698C2B05C1850083A6E6 /* UserDefaultsManager.swift */; };
 		6E3292872B0342C800D49FBA /* Publisher+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3292862B0342C800D49FBA /* Publisher+Ext.swift */; };
 		6E32928D2B04640A00D49FBA /* TermsTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E32928C2B04640A00D49FBA /* TermsTextView.swift */; };
 		6E32928F2B046A6800D49FBA /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E32928E2B046A6800D49FBA /* RegisterViewModel.swift */; };
@@ -69,6 +72,8 @@
 		6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6E2869822B04B7110083A6E6 /* ChatApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatApp.entitlements; sourceTree = "<group>"; };
 		6E2869832B04BD2D0083A6E6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		6E2869862B05A38E0083A6E6 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
+		6E28698C2B05C1850083A6E6 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		6E3292862B0342C800D49FBA /* Publisher+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Ext.swift"; sourceTree = "<group>"; };
 		6E32928C2B04640A00D49FBA /* TermsTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsTextView.swift; sourceTree = "<group>"; };
 		6E32928E2B046A6800D49FBA /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
@@ -112,6 +117,7 @@
 				6E2869682B04AFE50083A6E6 /* FirebaseAuth in Frameworks */,
 				6E2869772B04B0290083A6E6 /* GoogleSignIn in Frameworks */,
 				6E28697C2B04B0460083A6E6 /* SDWebImage in Frameworks */,
+				6E28698A2B05B4E60083A6E6 /* SwiftMessages in Frameworks */,
 				6E2869702B04AFE50083A6E6 /* FirebaseFirestoreSwift in Frameworks */,
 				6E28696A2B04AFE50083A6E6 /* FirebaseDatabase in Frameworks */,
 				6E92B6342AFDF368004C4591 /* SnapKit in Frameworks */,
@@ -137,6 +143,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6E2869852B05A3810083A6E6 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				6E2869862B05A38E0083A6E6 /* StorageService.swift */,
+				6E28698C2B05C1850083A6E6 /* UserDefaultsManager.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
 		6E32928A2B03568D00D49FBA /* Auth */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +236,7 @@
 		6E92B6262AFDD54F004C4591 /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				6E2869852B05A3810083A6E6 /* Storage */,
 				6E92B62C2AFDD58A004C4591 /* API */,
 				6E92B62B2AFDD584004C4591 /* Model */,
 				6E92B62A2AFDD57D004C4591 /* View */,
@@ -267,7 +283,7 @@
 		6E92B62B2AFDD584004C4591 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				6E92B64D2B01FCA2004C4591 /* Login */,
+				6E92B64D2B01FCA2004C4591 /* Auth */,
 				6E92B64A2AFE26B0004C4591 /* ViewModel */,
 			);
 			path = Model;
@@ -310,12 +326,12 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		6E92B64D2B01FCA2004C4591 /* Login */ = {
+		6E92B64D2B01FCA2004C4591 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
 				6E92B64E2B01FCA9004C4591 /* Auth.swift */,
 			);
-			path = Login;
+			path = Auth;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -348,6 +364,7 @@
 				6E2869782B04B0290083A6E6 /* GoogleSignInSwift */,
 				6E28697B2B04B0460083A6E6 /* SDWebImage */,
 				6E28697E2B04B05E0083A6E6 /* JGProgressHUD */,
+				6E2869892B05B4E60083A6E6 /* SwiftMessages */,
 			);
 			productName = ChatApp;
 			productReference = 6E92B5F22AFDD52D004C4591 /* ChatApp.app */;
@@ -428,6 +445,7 @@
 				6E2869752B04B0290083A6E6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				6E28697A2B04B0460083A6E6 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				6E28697D2B04B05E0083A6E6 /* XCRemoteSwiftPackageReference "JGProgressHUD" */,
+				6E2869882B05B4E60083A6E6 /* XCRemoteSwiftPackageReference "SwiftMessages" */,
 			);
 			productRefGroup = 6E92B5F32AFDD52D004C4591 /* Products */;
 			projectDirPath = "";
@@ -484,7 +502,9 @@
 				6E32928F2B046A6800D49FBA /* RegisterViewModel.swift in Sources */,
 				6E92B63D2AFDF80D004C4591 /* ThemeColor.swift in Sources */,
 				6E92B62E2AFDD5F3004C4591 /* LoginViewController.swift in Sources */,
+				6E28698D2B05C1850083A6E6 /* UserDefaultsManager.swift in Sources */,
 				6E92B6302AFDD641004C4591 /* RegisterViewController.swift in Sources */,
+				6E2869872B05A38E0083A6E6 /* StorageService.swift in Sources */,
 				6EEB12FA2B02137300C86315 /* UIImage+Ext.swift in Sources */,
 				6E92B63B2AFDF7F5004C4591 /* ThemeFont.swift in Sources */,
 				6E92B6412AFE0C64004C4591 /* UIView+Ext.swift in Sources */,
@@ -876,6 +896,14 @@
 				minimumVersion = 2.2.0;
 			};
 		};
+		6E2869882B05B4E60083A6E6 /* XCRemoteSwiftPackageReference "SwiftMessages" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftKickMobile/SwiftMessages.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.9;
+			};
+		};
 		6E92B6322AFDF368004C4591 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
@@ -949,6 +977,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6E28697D2B04B05E0083A6E6 /* XCRemoteSwiftPackageReference "JGProgressHUD" */;
 			productName = JGProgressHUD;
+		};
+		6E2869892B05B4E60083A6E6 /* SwiftMessages */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E2869882B05B4E60083A6E6 /* XCRemoteSwiftPackageReference "SwiftMessages" */;
+			productName = SwiftMessages;
 		};
 		6E92B6332AFDF368004C4591 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
