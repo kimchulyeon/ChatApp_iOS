@@ -76,7 +76,7 @@ class RegisterViewModel: ViewModelType {
                                                 provider: .email,
                                                 image: weakSelf.image ?? UIImage(named: "chat_logo")!)
                 
-                return AuthService.register(credential: credential)
+                return AuthService.shared.register(credential: credential)
                     .map { _ in AuthResult.success }
                     .replaceError(with: AuthResult.failure(error: AuthError.registerError))
                     .handleEvents(receiveCompletion: { _ in

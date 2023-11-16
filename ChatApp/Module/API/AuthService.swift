@@ -19,9 +19,13 @@ struct AuthCredential {
 }
 
 class AuthService {
-    static var cancellables = Set<AnyCancellable>()
+    static let shared = AuthService()
+    private init() { }
     
-    static func login(email: String, password: String) -> AnyPublisher<AuthDataResult?, Error> {
+    var cancellables = Set<AnyCancellable>()
+    
+    /// 로그인
+    func login(email: String, password: String) -> AnyPublisher<AuthDataResult?, Error> {
         return Future<AuthDataResult?, Error> { promise in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                 if let error = error {
@@ -33,10 +37,14 @@ class AuthService {
         }
             .eraseToAnyPublisher()
     }
-
-    static func register(credential: AuthCredential) -> AnyPublisher<AuthDataResult?, Error> {
+    
+    
+    /// 회원가입
+    func register(credential: AuthCredential) -> AnyPublisher<AuthDataResult?, Error> {
         return Future<AuthDataResult?, Error> { promise in
-            Auth.auth().createUser(withEmail: credential.email, password: credential.password) { authResult, error in
+            Auth.auth().createUser(withEmail: credential.email, password: credential.password) { [weak self] authResult, error in
+                guard let weakSelf = self else { return promise(.failure(AuthError.unknown)) }
+                
                 if let error = error {
                     print("🔴 Register Error >>>> \(String(describing: error.localizedDescription))")
                     return promise(.failure(error))
@@ -49,7 +57,6 @@ class AuthService {
                                                   email: credential.email,
                                                   provider: credential.provider)
                 
-                // firestore Save Here
                 StorageService.storageUserData(userData)
                     .sink { completion in
                         if case let .failure(error) = completion {
@@ -59,7 +66,7 @@ class AuthService {
                     } receiveValue: { _ in
                         return promise(.success(authResult))
                     }
-                    .store(in: &cancellables)
+                    .store(in: &weakSelf.cancellables)
             }
         }
             .eraseToAnyPublisher()
