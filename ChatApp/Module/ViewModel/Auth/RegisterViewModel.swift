@@ -9,7 +9,7 @@ import UIKit
 import PhotosUI
 import Combine
 
-class RegisterViewModel: ViewModelType {
+class RegisterViewModel {
     //MARK: - properties
     private var cancellables = Set<AnyCancellable>()
 
@@ -43,17 +43,17 @@ class RegisterViewModel: ViewModelType {
         $pickerResults
             .filter { $0.isEmpty == false }
             .sink { [weak self] results in
-            guard let result = results.map(\.itemProvider).first, let name = results.map(\.assetIdentifier).first else { return }
+                guard let result = results.map(\.itemProvider).first, let name = results.map(\.assetIdentifier).first else { return }
 
-            self?.imageName = name
+                self?.imageName = name
 
-            if result.canLoadObject(ofClass: UIImage.self) {
-                result.loadObject(ofClass: UIImage.self) { image, error in
-                    guard let image = image as? UIImage, error == nil else { return }
-                    self?.image = image
+                if result.canLoadObject(ofClass: UIImage.self) {
+                    result.loadObject(ofClass: UIImage.self) { image, error in
+                        guard let image = image as? UIImage, error == nil else { return }
+                        self?.image = image
+                    }
                 }
             }
-        }
             .store(in: &cancellables)
     }
 
@@ -77,13 +77,16 @@ class RegisterViewModel: ViewModelType {
                                                 image: weakSelf.image ?? UIImage(named: "chat_logo")!)
                 
                 return AuthService.shared.register(credential: credential)
+                    .flatMap { userData in
+                        StorageService.storageUserData(userData)
+                    }
                     .map { _ in AuthResult.success }
                     .replaceError(with: AuthResult.failure(error: AuthError.registerError))
                     .handleEvents(receiveCompletion: { _ in
                         weakSelf.isLoading = false
                     })
                     .eraseToAnyPublisher()
-        }
+            }
             .eraseToAnyPublisher()
     }
 

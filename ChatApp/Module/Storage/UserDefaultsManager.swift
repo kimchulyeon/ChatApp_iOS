@@ -8,11 +8,11 @@
 import Foundation
 
 struct UserDefaultsManager {
-    static func saveUserInfo(name: String, email: String, docID: String, uid: String) {
-        UserDefaults.standard.set(name, forKey: "Name")
-        UserDefaults.standard.set(email, forKey: "Email")
-        UserDefaults.standard.set(docID, forKey: "DocumentId")
-        UserDefaults.standard.set(uid, forKey: "UserId")
+    static func saveUserInfo(userData: UserData) {
+        UserDefaults.standard.set(userData.name, forKey: "Name")
+        UserDefaults.standard.set(userData.email, forKey: "Email")
+        UserDefaults.standard.set(userData.documentId, forKey: "DocumentId")
+        UserDefaults.standard.set(userData.userId, forKey: "UserId")
         
         print("\n\(#file)파일\n \(#line)줄\n \(#function)함수\n🟢 UserDefaults에 사용자 정보 저장 >>>> \n")
     }

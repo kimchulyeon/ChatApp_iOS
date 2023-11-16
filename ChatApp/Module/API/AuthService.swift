@@ -32,6 +32,7 @@ class AuthService {
                     print("🔴 Login Error >>>> \(String(describing: error.localizedDescription))")
                     return promise(.failure(error))
                 }
+                
                 return promise(.success(authResult))
             }
         }
@@ -40,11 +41,9 @@ class AuthService {
     
     
     /// 회원가입
-    func register(credential: AuthCredential) -> AnyPublisher<AuthDataResult?, Error> {
-        return Future<AuthDataResult?, Error> { promise in
-            Auth.auth().createUser(withEmail: credential.email, password: credential.password) { [weak self] authResult, error in
-                guard let weakSelf = self else { return promise(.failure(AuthError.unknown)) }
-                
+    func register(credential: AuthCredential) -> AnyPublisher<UserData, Error> {
+        return Future<UserData, Error> { promise in
+            Auth.auth().createUser(withEmail: credential.email, password: credential.password) { authResult, error in
                 if let error = error {
                     print("🔴 Register Error >>>> \(String(describing: error.localizedDescription))")
                     return promise(.failure(error))
@@ -52,21 +51,12 @@ class AuthService {
                 
                 
                 guard let userId = authResult?.user.uid else { return promise(.failure(AuthError.unknown)) }
-                let userData: UserData = UserData(userId: userId,
-                                                  name: credential.name,
-                                                  email: credential.email,
-                                                  provider: credential.provider)
+                let userData = UserData(userId: userId,
+                                        name: credential.name,
+                                        email: credential.email,
+                                        provider: credential.provider.rawValue)
                 
-                StorageService.storageUserData(userData)
-                    .sink { completion in
-                        if case let .failure(error) = completion {
-                            print("🔴 DB에 유저 정보 저장 실패 >>>> \(error)")
-                            return promise(.failure(error))
-                        }
-                    } receiveValue: { _ in
-                        return promise(.success(authResult))
-                    }
-                    .store(in: &weakSelf.cancellables)
+                return promise(.success(userData))
             }
         }
             .eraseToAnyPublisher()

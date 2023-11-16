@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 enum AuthError: Error {
     case unknown
@@ -27,12 +28,25 @@ enum EmojisType {
     
     var emoji: String {
         switch self {
-        case .error:
-            ["😥", "😖", "😳", "😵", "☹️"].randomElement()!
-        case .warning:
-            "🙄"
-        case .success:
-            "🤗"
+        case .error: ["😥", "😖", "😳", "😵", "☹️"].randomElement()!
+        case .warning: "🙄"
+        case .success: "🤗"
         }
     }
+}
+
+
+enum ProviderType: String, Codable {
+    case email
+    case apple
+    case google
+}
+
+struct UserData: Codable {
+    @ServerTimestamp var createdAt: Date?
+    let userId: String?
+    var documentId: String? = nil
+    let name: String?
+    let email: String?
+    let provider: ProviderType.RawValue?
 }

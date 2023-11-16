@@ -127,6 +127,12 @@ class LoginViewController: UIViewController {
         sv.spacing = 12
         return sv
     }()
+    
+    lazy var loadingSpinner: JGProgressHUD = {
+        let loader = JGProgressHUD(style: .dark)
+        loader.textLabel.text = "Loading"
+        return loader
+    }()
 
 
     private var cancellables = Set<AnyCancellable>()
@@ -186,27 +192,9 @@ class LoginViewController: UIViewController {
     }
 
     private func bind() {
-        emailTextField.textPublisher.compactMap { $0 }.assign(to: \.email, on: viewModel).store(in: &cancellables)
-        passwordTextField.textPublisher.compactMap { $0 }.assign(to: \.password, on: viewModel).store(in: &cancellables)
-        loginButton.tapPublisher
-            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
-            .flatMap { [unowned self] _ in
-                return viewModel.handleLogin()
-            }
-            .sink { [weak self] result in
-                switch result {
-                case .success:
-                    print("성공 >>>> ")
-                    #warning("화면 이동 구현")
-                case .failure(error: let error):
-                    print("실패 >>>> ")
-                    if error == .textFieldEmpty {
-                        self?.setErrorPlaceholder()
-                    }
-
-                }
-            }
-            .store(in: &cancellables)
+        bindLoadingState()
+        bindTextFields()
+        bindLoginButtonAction()
     }
 
     private func handleRegister() {
@@ -228,7 +216,50 @@ class LoginViewController: UIViewController {
         emailTextField.setPlaceholder(text: "이메일을 입력해주세요", color: .systemRed)
         passwordTextField.setPlaceholder(text: "비밀번호를 입력해주세요", color: .systemRed)
     }
+    
+    private func bindLoadingState() {
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                guard let weakSelf = self else { return }
+                if isLoading {
+                    weakSelf.loadingSpinner.show(in: weakSelf.view, animated: true)
+                } else {
+                    weakSelf.loadingSpinner.dismiss(animated: true)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindTextFields() {
+        emailTextField.textPublisher.compactMap { $0 }.assign(to: \.email, on: viewModel).store(in: &cancellables)
+        passwordTextField.textPublisher.compactMap { $0 }.assign(to: \.password, on: viewModel).store(in: &cancellables)
+    }
 
+    private func bindLoginButtonAction() {
+        loginButton.tapPublisher
+            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
+            .flatMap { [unowned self] _ in
+                return viewModel.handleLogin()
+            }
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    print("성공 >>>> ")
+                    let vc = UIViewController()
+                    CommonUtil.ch
+                    
+                case .failure(error: let error):
+                    print("실패 >>>> ")
+                    if error == .textFieldEmpty {
+                        self?.setErrorPlaceholder()
+                    }
+                    self?.view.showAlert(content: "로그인에 실패하였습니다")
+
+                }
+            }
+            .store(in: &cancellables)
+    }
 }
 
 
@@ -236,6 +267,7 @@ class LoginViewController: UIViewController {
 
 #if DEBUG
     import SwiftUI
+import JGProgressHUD
 
     struct MainViewControllerPresentable: UIViewControllerRepresentable {
         func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
