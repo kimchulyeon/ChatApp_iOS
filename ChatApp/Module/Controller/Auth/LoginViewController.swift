@@ -246,8 +246,7 @@ class LoginViewController: UIViewController {
                 switch result {
                 case .success:
                     print("성공 >>>> ")
-                    let vc = UIViewController()
-                    CommonUtil.ch
+//                    CommonUtil.changeRootView(to: vc)
                     
                 case .failure(error: let error):
                     print("실패 >>>> ")
