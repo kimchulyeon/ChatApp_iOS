@@ -30,6 +30,14 @@ class RegisterViewModel {
         let valid = nameValid && emailValid && passwordValid
         return Just((valid, passwordCheckValid)).eraseToAnyPublisher()
     }
+    
+    let registerButtonTapSubject = PassthroughSubject<Void, Never>()
+    var registerResultPublisher: AnyPublisher<AuthResult, Never> {
+        registerButtonTapSubject
+            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
+            .flatMap { [unowned self] _ in handleRegister() }
+            .eraseToAnyPublisher()
+    }
 
 
     //MARK: - lifecycle

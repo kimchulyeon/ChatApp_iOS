@@ -27,9 +27,7 @@ class LoginViewModel {
     var loginResultPublisher: AnyPublisher<AuthResult, Never> {
         loginButtonTapSubject
             .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
-            .flatMap { [unowned self] _ in
-                return handleLogin()
-            }
+            .flatMap { [unowned self] _ in handleLogin() }
             .eraseToAnyPublisher()
     }
 
@@ -51,18 +49,18 @@ class LoginViewModel {
             weakSelf.isLoading = true
             return AuthService.shared.login(email: weakSelf.email, password: weakSelf.password)
                 .flatMap { authResult in
-                return StorageService.getUserData(with: authResult)
-            }
+                    return StorageService.getUserData(with: authResult)
+                }
                 .map { userData in
-                UserDefaultsManager.saveUserInfo(userData: userData)
-                return AuthResult.success
-            }
+                    UserDefaultsManager.saveUserInfo(userData: userData)
+                    return AuthResult.success
+                }
                 .replaceError(with: AuthResult.failure(error: AuthError.loginError))
                 .handleEvents(receiveCompletion: { _ in
-                weakSelf.isLoading = false
-            })
+                    weakSelf.isLoading = false
+                })
                 .eraseToAnyPublisher()
-        }
+            }
             .eraseToAnyPublisher()
     }
 
@@ -76,10 +74,11 @@ class LoginViewModel {
         }
         
         return servicePublisher
-            .flatMap { oAuthCredential in
+            .flatMap { [weak self] oAuthCredential in
+                self?.isLoading = true
                 return AuthService.shared.oAuth(provider: .apple, credential: oAuthCredential)
             }
-            .flatMap { authResult in
+            .flatMap { [weak self] authResult in
                 return StorageService.getUserData(with: authResult)
                     .catch { _ in
                         let userData = UserData(userId: authResult?.user.uid,
@@ -88,12 +87,18 @@ class LoginViewModel {
                                                 provider: type.rawValue)
                         return StorageService.storageUserData(userData)
                     }
+                    .handleEvents(receiveCompletion: { _ in
+                        self?.isLoading = false
+                    })
             }
             .map { userData in
                 UserDefaultsManager.saveUserInfo(userData: userData)
                 return AuthResult.success
             }
             .replaceError(with: AuthResult.failure(error: AuthError.loginError))
+            .handleEvents(receiveCompletion: { [weak self] _ in
+                self?.isLoading = false
+            })
             .eraseToAnyPublisher()
     }
 }

@@ -197,13 +197,6 @@ class RegisterViewController: UIViewController {
         present(imagePicker, animated: true)
     }
 
-    private func setErrorPlaceholder() {
-        usernameTextField.setPlaceholder(text: "이름을 입력해주세요", color: .systemRed)
-        emailTextField.setPlaceholder(text: "이메일을 입력해주세요", color: .systemRed)
-        passwordTextField.setPlaceholder(text: "비밀번호를 입력해주세요", color: .systemRed)
-        checkPasswordTextField.setPlaceholder(text: "비밀번호를 입력해주세요", color: .systemRed)
-    }
-
 
 
     private func bindLoadingState() {
@@ -239,13 +232,11 @@ class RegisterViewController: UIViewController {
     }
 
     private func bindRegisterButtonAction() {
-        registerButton.tapPublisher
-            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
-            .flatMap { [unowned self] _ in
-                view.endEditing(true)
-                return viewModel.handleRegister()
-            }
+        registerButton.tapPublisher.sink { [unowned self] _ in viewModel.registerButtonTapSubject.send() }.store(in: &cancellables)
+        viewModel.registerResultPublisher
             .sink { [weak self] result in
+                self?.view.endEditing(true)
+                
                 switch result {
                 case .success:
                     self?.view.showAlert(layout: .centeredView,
@@ -262,15 +253,10 @@ class RegisterViewController: UIViewController {
                                         })
                 case .failure(error: let error):
                     switch error {
-                    case .textFieldEmpty:
-                        self?.view.showAlert(content: "모든 항목을 입력해주세요")
-                        self?.setErrorPlaceholder()
-                    case .passwordDiff:
-                        self?.view.showAlert(content: "패스워드가 동일하지 않습니다")
-                    case .unknown, .registerError:
-                        self?.view.showAlert(content: "회원가입에 실패했습니다")
-                    default:
-                        break
+                    case .textFieldEmpty:          self?.view.showAlert(content: "모든 항목을 입력해주세요")
+                    case .passwordDiff:            self?.view.showAlert(content: "패스워드가 동일하지 않습니다")
+                    case .unknown, .registerError: self?.view.showAlert(content: "회원가입에 실패했습니다")
+                    default: break
                     }
                 }
             }

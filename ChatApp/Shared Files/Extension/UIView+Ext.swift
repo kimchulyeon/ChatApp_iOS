@@ -32,6 +32,7 @@ extension UIView {
         alertView.button?.setTitle("확인", for: .normal)
         alertView.button?.backgroundColor = ThemeColor.primary
         alertView.button?.isHidden = buttonHidden
+        alertView.button?.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         alertView.buttonTapHandler = buttonHandler
         alertView.layoutMarginAdditions = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         (alertView.backgroundView as? CornerRoundingView)?.cornerRadius = 10

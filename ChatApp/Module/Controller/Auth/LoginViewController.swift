@@ -230,15 +230,6 @@ class LoginViewController: UIViewController {
         print("PASSWORD")
     }
     
-    private func resetPlaceholder() {
-        emailTextField.setPlaceholder(text: "이메일", color: ThemeColor.text)
-        passwordTextField.setPlaceholder(text: "비밀번호", color: ThemeColor.text)
-    }
-    
-    private func setErrorPlaceholder() {
-        emailTextField.setPlaceholder(text: "이메일을 입력해주세요", color: .systemRed)
-        passwordTextField.setPlaceholder(text: "비밀번호를 입력해주세요", color: .systemRed)
-    }
     
     private func bindLoadingState() {
         viewModel.$isLoading
@@ -265,12 +256,13 @@ class LoginViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    print("성공 >>>> ")
+                    print("🟢 로그인 성공")
                     UserDefaultsManager.checkUserDefaultsValues()
                 case .failure(error: let error):
                     print("실패 >>>> ")
                     if error == .textFieldEmpty {
-                        self?.setErrorPlaceholder()
+                        self?.view.showAlert(content: "항목을 입력해주세요")
+                        return
                     }
                     self?.view.showAlert(content: "로그인에 실패하였습니다")
                     
@@ -295,7 +287,7 @@ class LoginViewController: UIViewController {
     private func handleLoginResult(result: AuthResult) {
         switch result {
         case .success:
-            print("로그인 성공 >>>> ")
+            print("🟢 로그인 성공")
             UserDefaultsManager.checkUserDefaultsValues()
         case .failure(error: let error):
             print("🔴 Error \(error)")
