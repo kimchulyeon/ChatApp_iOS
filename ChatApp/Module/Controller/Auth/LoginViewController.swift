@@ -21,14 +21,14 @@ class LoginViewController: UIViewController {
         lb.tintColor = ThemeColor.text
         return lb
     }()
-
+    
     private let logoImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(named: "chat_logo")
         iv.contentMode = .scaleAspectFit
         return iv
     }()
-
+    
     private lazy var emailTextField: UITextField = {
         let tf = UITextField()
         tf.tintColor = ThemeColor.text
@@ -43,7 +43,7 @@ class LoginViewController: UIViewController {
         tf.snp.makeConstraints { $0.height.equalTo(50) }
         return tf
     }()
-
+    
     private lazy var passwordTextField: UITextField = {
         let tf = UITextField()
         tf.tintColor = ThemeColor.text
@@ -57,7 +57,7 @@ class LoginViewController: UIViewController {
         tf.clearButtonMode = .whileEditing
         return tf
     }()
-
+    
     private lazy var loginButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("로그인", for: .normal)
@@ -67,7 +67,7 @@ class LoginViewController: UIViewController {
         btn.addCornerRadius(radius: 8)
         return btn
     }()
-
+    
     private lazy var lostPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("비밀번호를 잃어버렸나요?", for: .normal)
@@ -81,7 +81,7 @@ class LoginViewController: UIViewController {
         btn.addAction(action, for: .touchUpInside)
         return btn
     }()
-
+    
     private lazy var registerButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("가입하러가기", for: .normal)
@@ -95,16 +95,16 @@ class LoginViewController: UIViewController {
         btn.addAction(action, for: .touchUpInside)
         return btn
     }()
-
+    
     private lazy var hButtonStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [lostPasswordButton, registerButton])
         sv.axis = .horizontal
         sv.distribution = .fillEqually
         return sv
     }()
-
+    
     private lazy var dividerView = DividerView()
-
+    
     private lazy var appleButton: ASAuthorizationAppleIDButton = {
         let btn = ASAuthorizationAppleIDButton()
         let action = UIAction { [unowned self] _ in
@@ -113,7 +113,7 @@ class LoginViewController: UIViewController {
         btn.addAction(action, for: .touchUpInside)
         return btn
     }()
-
+    
     private lazy var googleButton: GoogleButton = {
         let btn = GoogleButton()
         let action = UIAction { [unowned self] _ in
@@ -122,7 +122,7 @@ class LoginViewController: UIViewController {
         btn.addAction(action, for: .touchUpInside)
         return btn
     }()
-
+    
     private lazy var vStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
             emailTextField,
@@ -144,13 +144,13 @@ class LoginViewController: UIViewController {
         loader.textLabel.text = "Loading"
         return loader
     }()
-
-
+    
+    
     private var cancellables = Set<AnyCancellable>()
     private let viewModel: LoginViewModel
-
-
-
+    
+    
+    
     //MARK: - lifecycle
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -159,22 +159,22 @@ class LoginViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
         bind()
     }
-
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-
+        
         view.endEditing(true)
     }
-
-
-
+    
+    
+    
     //MARK: - method
     private func setupUI() {
         view.addSubview(welcomeLabel)
@@ -184,7 +184,7 @@ class LoginViewController: UIViewController {
             make.centerX.equalToSuperview()
             make.height.greaterThanOrEqualTo(40)
         }
-
+        
         view.addSubview(logoImageView)
         logoImageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         logoImageView.snp.makeConstraints { make in
@@ -192,7 +192,7 @@ class LoginViewController: UIViewController {
             make.centerX.equalTo(view.snp.centerX)
             make.top.equalTo(welcomeLabel.snp.bottom).offset(16)
         }
-
+        
         view.addSubview(vStackView)
         vStackView.snp.makeConstraints { make in
             make.top.equalTo(logoImageView.snp.bottom).offset(30)
@@ -201,7 +201,7 @@ class LoginViewController: UIViewController {
             make.bottom.lessThanOrEqualTo(view.snp.bottomMargin).offset(-24)
         }
     }
-
+    
     private func bind() {
         bindLoadingState()
         bindTextFields()
@@ -211,13 +211,13 @@ class LoginViewController: UIViewController {
     }
     
     
-
+    
     private func handleRegister() {
         let registVM = RegisterViewModel()
         let registerVC = RegisterViewController(viewModel: registVM)
         navigationController?.pushViewController(registerVC, animated: true)
     }
-
+    
     private func handleAppleLogin() {
         AppleService.shared.startSignInWithAppleFlow(view: self)
     }
@@ -258,13 +258,10 @@ class LoginViewController: UIViewController {
         emailTextField.textPublisher.compactMap { $0 }.assign(to: \.email, on: viewModel).store(in: &cancellables)
         passwordTextField.textPublisher.compactMap { $0 }.assign(to: \.password, on: viewModel).store(in: &cancellables)
     }
-
+    
     private func bindLoginButtonAction() {
-        loginButton.tapPublisher
-            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
-            .flatMap { [unowned self] _ in
-                return viewModel.handleLogin()
-            }
+        loginButton.tapPublisher.sink { [unowned self] _ in viewModel.loginButtonTapSubject.send() }.store(in: &cancellables)
+        viewModel.loginResultPublisher
             .sink { [weak self] result in
                 switch result {
                 case .success:
@@ -276,7 +273,7 @@ class LoginViewController: UIViewController {
                         self?.setErrorPlaceholder()
                     }
                     self?.view.showAlert(content: "로그인에 실패하였습니다")
-
+                    
                 }
             }
             .store(in: &cancellables)
@@ -284,31 +281,25 @@ class LoginViewController: UIViewController {
     
     private func bindAppleLoginButtonAction() {
         viewModel.handleOAuthLogin(type: .apple)
-            .sink { [weak self] result in
-                switch result {
-                case .success:
-                    print("애플 로그인 성공 >>>> ")
-                    UserDefaultsManager.checkUserDefaultsValues()
-                case .failure(error: let error):
-                    print("🔴 Error \(error)")
-                    self?.view.showAlert(content: "로그인에 실패하였습니다")
-                }
-            }
+            .sink { [weak self] result in self?.handleLoginResult(result: result) }
             .store(in: &cancellables)
     }
     
+    
     private func bindGoogleLoginButtonAction() {
         viewModel.handleOAuthLogin(type: .google)
-            .sink { [weak self] result in
-                switch result {
-                case .success:
-                    print("구글 로그인 성공 >>>> ")
-                    UserDefaultsManager.checkUserDefaultsValues()
-                case .failure(error: let error):
-                    print("🔴 Error \(error)")
-                    self?.view.showAlert(content: "로그인에 실패하였습니다")
-                }
-            }
+            .sink { [weak self] result in self?.handleLoginResult(result: result) }
             .store(in: &cancellables)
+    }
+    
+    private func handleLoginResult(result: AuthResult) {
+        switch result {
+        case .success:
+            print("로그인 성공 >>>> ")
+            UserDefaultsManager.checkUserDefaultsValues()
+        case .failure(error: let error):
+            print("🔴 Error \(error)")
+            view.showAlert(content: "로그인에 실패하였습니다")
+        }
     }
 }

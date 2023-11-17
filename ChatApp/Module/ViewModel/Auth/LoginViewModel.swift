@@ -22,6 +22,16 @@ class LoginViewModel {
         let valid = idValid && pwValid
         return Just(valid).eraseToAnyPublisher()
     }
+    
+    let loginButtonTapSubject = PassthroughSubject<Void, Never>()
+    var loginResultPublisher: AnyPublisher<AuthResult, Never> {
+        loginButtonTapSubject
+            .coolDown(for: .seconds(3), scheduler: DispatchQueue.main)
+            .flatMap { [unowned self] _ in
+                return handleLogin()
+            }
+            .eraseToAnyPublisher()
+    }
 
     //MARK: - lifecycle
 
@@ -60,9 +70,9 @@ class LoginViewModel {
     func handleOAuthLogin(type: ProviderType) -> AnyPublisher<AuthResult, Never> {
         var servicePublisher: AnyPublisher<AuthCredential, Error>
         switch type {
-        case .apple: servicePublisher = AppleService.shared.appleOAuthCredentialPublisher
-        case .google: servicePublisher = GoogleService.shared.googleOAuthCredentialPublisher
-        default: servicePublisher = Fail(error: AuthError.loginError).eraseToAnyPublisher()
+            case .apple: servicePublisher = AppleService.shared.appleOAuthCredentialPublisher
+            case .google: servicePublisher = GoogleService.shared.googleOAuthCredentialPublisher
+            default: servicePublisher = Fail(error: AuthError.loginError).eraseToAnyPublisher()
         }
         
         return servicePublisher
