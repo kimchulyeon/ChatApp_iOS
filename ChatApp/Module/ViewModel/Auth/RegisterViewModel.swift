@@ -14,7 +14,6 @@ class RegisterViewModel {
     private var cancellables = Set<AnyCancellable>()
 
     @Published var image: UIImage?
-    @Published var imageName: String?
     @Published var pickerResults: [PHPickerResult] = []
     @Published var name: String = ""
     @Published var email: String = ""
@@ -51,9 +50,7 @@ class RegisterViewModel {
         $pickerResults
             .filter { $0.isEmpty == false }
             .sink { [weak self] results in
-                guard let result = results.map(\.itemProvider).first, let name = results.map(\.assetIdentifier).first else { return }
-
-                self?.imageName = name
+                guard let result = results.map(\.itemProvider).first else { return }
 
                 if result.canLoadObject(ofClass: UIImage.self) {
                     result.loadObject(ofClass: UIImage.self) { image, error in
@@ -78,11 +75,10 @@ class RegisterViewModel {
                 }
 
                 weakSelf.isLoading = true
-                let credential = AuthCredentialWithImg(email: weakSelf.email, 
-                                                password: weakSelf.password,
-                                                name: weakSelf.name,
-                                                provider: .email,
-                                                image: weakSelf.image ?? UIImage(named: "chat_logo")!)
+                let credential = AuthCredentialWithEmail(email: weakSelf.email, 
+                                                        password: weakSelf.password,
+                                                        name: weakSelf.name,
+                                                        provider: .email)
                 
                 return AuthService.shared.register(credential: credential)
                     .flatMap { userData in

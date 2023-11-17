@@ -80,11 +80,12 @@ class LoginViewModel {
             }
             .flatMap { [weak self] authResult in
                 return StorageService.getUserData(with: authResult)
-                    .catch { _ in
+                    .catch { _ in // 기존 유저
                         let userData = UserData(userId: authResult?.user.uid,
                                                 name: authResult?.user.displayName,
                                                 email: authResult?.user.email,
                                                 provider: type.rawValue)
+                        
                         return StorageService.storageUserData(userData)
                     }
                     .handleEvents(receiveCompletion: { _ in

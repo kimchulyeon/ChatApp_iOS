@@ -8,12 +8,12 @@
 import Foundation
 import FirebaseFirestore
 
-struct AuthCredentialWithImg {
+struct AuthCredentialWithEmail {
     let email: String
     let password: String
     let name: String
     let provider: ProviderType
-    let image: UIImage
+    
 }
 
 enum AuthError: Error {

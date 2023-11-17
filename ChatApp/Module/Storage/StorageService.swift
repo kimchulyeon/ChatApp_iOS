@@ -9,9 +9,11 @@ import Foundation
 import Combine
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 
 let DB = Firestore.firestore()
+let FILE_DB = Storage.storage()
 
 class StorageService {
     static let USERS_COLLECTION = DB.collection("users")
@@ -73,4 +75,33 @@ class StorageService {
             }
         }.eraseToAnyPublisher()
     }
+    
+    static func uploadImage(with userId: String, _ image: UIImage) -> AnyPublisher<Void, Error> {
+        return Future<Void, Error> { promise in
+            let pathString = "users/\(userId)/profile"
+            let pathRef = FILE_DB.reference(withPath: pathString)
+            guard let imageData = image.jpegData(compressionQuality: 0.75) else { return }
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            pathRef.putData(imageData, metadata: metadata) { _, error in
+                if let error = error {
+                    promise(.failure(error))
+                }
+                promise(.success(()))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    /**
+     [ 이미지 업로드 ]
+     1. userId로 PATH 만들기 ======> "users/\(userId)/profile"
+     2. PATH REF =====> PATH REF = FILE_DB.reference(withPath: PATH)
+     3. PATH REF에 이미지 업로드 =====> PATH REF.putData(이미지.jpegData(), metadata: StorageMetadata()) // metadata.contentType = "image/jpeg"
+     
+     [ 이미지 내려받기 ]
+     1. userId로 StorageReference 타입의 PATH를 받아서
+     2. PATH REF.getData() { data, error in UIImage(data: data)}
+     */
 }

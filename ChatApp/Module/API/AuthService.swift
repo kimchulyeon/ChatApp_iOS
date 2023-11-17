@@ -33,7 +33,7 @@ class AuthService {
     
     
     /// 회원가입
-    func register(credential: AuthCredentialWithImg) -> AnyPublisher<UserData, Error> {
+    func register(credential: AuthCredentialWithEmail) -> AnyPublisher<UserData, Error> {
         return Future<UserData, Error> { promise in
             Auth.auth().createUser(withEmail: credential.email, password: credential.password) { authResult, error in
                 if let error = error {
