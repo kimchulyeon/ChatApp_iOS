@@ -8,12 +8,21 @@
 import Foundation
 import FirebaseFirestore
 
+struct AuthCredentialWithImg {
+    let email: String
+    let password: String
+    let name: String
+    let provider: ProviderType
+    let image: UIImage
+}
+
 enum AuthError: Error {
     case unknown
     case textFieldEmpty
     case passwordDiff
     case registerError
     case loginError
+    case noDataInDB
 }
 
 enum AuthResult {
@@ -43,7 +52,7 @@ enum ProviderType: String, Codable {
 }
 
 struct UserData: Codable {
-    @ServerTimestamp var createdAt: Date?
+    @ServerTimestamp var createdAt: Date? = nil
     let userId: String?
     var documentId: String? = nil
     let name: String?

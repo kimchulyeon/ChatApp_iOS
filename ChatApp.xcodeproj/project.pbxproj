@@ -18,7 +18,6 @@
 		6E2869792B04B0290083A6E6 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6E2869782B04B0290083A6E6 /* GoogleSignInSwift */; };
 		6E28697C2B04B0460083A6E6 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 6E28697B2B04B0460083A6E6 /* SDWebImage */; };
 		6E28697F2B04B05E0083A6E6 /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 6E28697E2B04B05E0083A6E6 /* JGProgressHUD */; };
-		6E2869812B04B5FC0083A6E6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */; };
 		6E2869842B04BD2D0083A6E6 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2869832B04BD2D0083A6E6 /* AuthService.swift */; };
 		6E2869872B05A38E0083A6E6 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2869862B05A38E0083A6E6 /* StorageService.swift */; };
 		6E28698A2B05B4E60083A6E6 /* SwiftMessages in Frameworks */ = {isa = PBXBuildFile; productRef = 6E2869892B05B4E60083A6E6 /* SwiftMessages */; };
@@ -46,6 +45,9 @@
 		6E92B6462AFE130C004C4591 /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E92B6452AFE130C004C4591 /* UITextField.swift */; };
 		6E92B6492AFE2544004C4591 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E92B6482AFE2544004C4591 /* LoginViewModel.swift */; };
 		6E92B64F2B01FCA9004C4591 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E92B64E2B01FCA9004C4591 /* Auth.swift */; };
+		6EE2C2F22B06F1BC00BC3313 /* AppleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE2C2F12B06F1BC00BC3313 /* AppleService.swift */; };
+		6EE2C2F42B06F1CB00BC3313 /* GoogleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE2C2F32B06F1CB00BC3313 /* GoogleService.swift */; };
+		6EE2C2F62B071D5F00BC3313 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6EE2C2F52B071D5F00BC3313 /* GoogleService-Info.plist */; };
 		6EEB12F62B02107000C86315 /* DividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEB12F52B02107000C86315 /* DividerView.swift */; };
 		6EEB12F82B02134800C86315 /* GoogleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEB12F72B02134800C86315 /* GoogleButton.swift */; };
 		6EEB12FA2B02137300C86315 /* UIImage+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EEB12F92B02137300C86315 /* UIImage+Ext.swift */; };
@@ -69,7 +71,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6E2869822B04B7110083A6E6 /* ChatApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatApp.entitlements; sourceTree = "<group>"; };
 		6E2869832B04BD2D0083A6E6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		6E2869862B05A38E0083A6E6 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -99,6 +100,9 @@
 		6E92B6452AFE130C004C4591 /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
 		6E92B6482AFE2544004C4591 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		6E92B64E2B01FCA9004C4591 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
+		6EE2C2F12B06F1BC00BC3313 /* AppleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleService.swift; sourceTree = "<group>"; };
+		6EE2C2F32B06F1CB00BC3313 /* GoogleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleService.swift; sourceTree = "<group>"; };
+		6EE2C2F52B071D5F00BC3313 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6EEB12F52B02107000C86315 /* DividerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerView.swift; sourceTree = "<group>"; };
 		6EEB12F72B02134800C86315 /* GoogleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleButton.swift; sourceTree = "<group>"; };
 		6EEB12F92B02137300C86315 /* UIImage+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Ext.swift"; sourceTree = "<group>"; };
@@ -203,7 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				6E2869822B04B7110083A6E6 /* ChatApp.entitlements */,
-				6E2869802B04B5FC0083A6E6 /* GoogleService-Info.plist */,
+				6EE2C2F52B071D5F00BC3313 /* GoogleService-Info.plist */,
 				6E92B6272AFDD553004C4591 /* Shared Files */,
 				6E92B6262AFDD54F004C4591 /* Module */,
 				6E92B6252AFDD54A004C4591 /* Support */,
@@ -301,6 +305,8 @@
 			isa = PBXGroup;
 			children = (
 				6E2869832B04BD2D0083A6E6 /* AuthService.swift */,
+				6EE2C2F12B06F1BC00BC3313 /* AppleService.swift */,
+				6EE2C2F32B06F1CB00BC3313 /* GoogleService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -465,7 +471,7 @@
 			files = (
 				6E92B6022AFDD52E004C4591 /* LaunchScreen.storyboard in Resources */,
 				6E92B5FF2AFDD52E004C4591 /* Assets.xcassets in Resources */,
-				6E2869812B04B5FC0083A6E6 /* GoogleService-Info.plist in Resources */,
+				6EE2C2F62B071D5F00BC3313 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,8 +516,10 @@
 				6E92B63B2AFDF7F5004C4591 /* ThemeFont.swift in Sources */,
 				6E92B6412AFE0C64004C4591 /* UIView+Ext.swift in Sources */,
 				6E92B5FA2AFDD52D004C4591 /* ViewController.swift in Sources */,
+				6EE2C2F42B06F1CB00BC3313 /* GoogleService.swift in Sources */,
 				6E92B5F62AFDD52D004C4591 /* AppDelegate.swift in Sources */,
 				6E92B63E2AFDF902004C4591 /* SceneDelegate.swift in Sources */,
+				6EE2C2F22B06F1BC00BC3313 /* AppleService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

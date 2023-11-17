@@ -10,6 +10,7 @@ import SnapKit
 import Combine
 import CombineCocoa
 import AuthenticationServices
+import JGProgressHUD
 
 class LoginViewController: UIViewController {
     //MARK: - properties
@@ -104,13 +105,23 @@ class LoginViewController: UIViewController {
 
     private lazy var dividerView = DividerView()
 
-    private let appleButton: ASAuthorizationAppleIDButton = {
+    private lazy var appleButton: ASAuthorizationAppleIDButton = {
         let btn = ASAuthorizationAppleIDButton()
-        btn.translatesAutoresizingMaskIntoConstraints = false
+        let action = UIAction { [unowned self] _ in
+            handleAppleLogin()
+        }
+        btn.addAction(action, for: .touchUpInside)
         return btn
     }()
 
-    private let googleButton = GoogleButton()
+    private lazy var googleButton: GoogleButton = {
+        let btn = GoogleButton()
+        let action = UIAction { [unowned self] _ in
+            handleGoogleLogin()
+        }
+        btn.addAction(action, for: .touchUpInside)
+        return btn
+    }()
 
     private lazy var vStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
@@ -195,7 +206,11 @@ class LoginViewController: UIViewController {
         bindLoadingState()
         bindTextFields()
         bindLoginButtonAction()
+        bindAppleLoginButtonAction()
+        bindGoogleLoginButtonAction()
     }
+    
+    
 
     private func handleRegister() {
         let registVM = RegisterViewModel()
@@ -203,6 +218,14 @@ class LoginViewController: UIViewController {
         navigationController?.pushViewController(registerVC, animated: true)
     }
 
+    private func handleAppleLogin() {
+        AppleService.shared.startSignInWithAppleFlow(view: self)
+    }
+    
+    private func handleGoogleLogin() {
+        GoogleService.shared.startSignInWithGoogleFlow(with: self)
+    }
+    
     private func handleForgotPassword() {
         print("PASSWORD")
     }
@@ -246,8 +269,7 @@ class LoginViewController: UIViewController {
                 switch result {
                 case .success:
                     print("성공 >>>> ")
-//                    CommonUtil.changeRootView(to: vc)
-                    
+                    UserDefaultsManager.checkUserDefaultsValues()
                 case .failure(error: let error):
                     print("실패 >>>> ")
                     if error == .textFieldEmpty {
@@ -259,30 +281,34 @@ class LoginViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
+    
+    private func bindAppleLoginButtonAction() {
+        viewModel.handleOAuthLogin(type: .apple)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    print("애플 로그인 성공 >>>> ")
+                    UserDefaultsManager.checkUserDefaultsValues()
+                case .failure(error: let error):
+                    print("🔴 Error \(error)")
+                    self?.view.showAlert(content: "로그인에 실패하였습니다")
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindGoogleLoginButtonAction() {
+        viewModel.handleOAuthLogin(type: .google)
+            .sink { [weak self] result in
+                switch result {
+                case .success:
+                    print("구글 로그인 성공 >>>> ")
+                    UserDefaultsManager.checkUserDefaultsValues()
+                case .failure(error: let error):
+                    print("🔴 Error \(error)")
+                    self?.view.showAlert(content: "로그인에 실패하였습니다")
+                }
+            }
+            .store(in: &cancellables)
+    }
 }
-
-
-
-
-#if DEBUG
-    import SwiftUI
-import JGProgressHUD
-
-    struct MainViewControllerPresentable: UIViewControllerRepresentable {
-        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-
-        }
-        func makeUIViewController(context: Context) -> some UIViewController {
-            LoginViewController(viewModel: LoginViewModel())
-        }
-    }
-
-    struct ViewControllerPrepresentable_PreviewProvider: PreviewProvider {
-        static var previews: some View {
-            MainViewControllerPresentable()
-                .ignoresSafeArea()
-        }
-    }
-
-#endif
-

@@ -10,14 +10,6 @@ import Combine
 import FirebaseCore
 import FirebaseAuth
 
-struct AuthCredential {
-    let email: String
-    let password: String
-    let name: String
-    let provider: ProviderType
-    let image: UIImage
-}
-
 class AuthService {
     static let shared = AuthService()
     private init() { }
@@ -29,7 +21,7 @@ class AuthService {
         return Future<AuthDataResult?, Error> { promise in
             Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                 if let error = error {
-                    print("🔴 Login Error >>>> \(String(describing: error.localizedDescription))")
+                    print("🔴 Login Error >>>> \(error.localizedDescription)")
                     return promise(.failure(error))
                 }
                 
@@ -41,11 +33,11 @@ class AuthService {
     
     
     /// 회원가입
-    func register(credential: AuthCredential) -> AnyPublisher<UserData, Error> {
+    func register(credential: AuthCredentialWithImg) -> AnyPublisher<UserData, Error> {
         return Future<UserData, Error> { promise in
             Auth.auth().createUser(withEmail: credential.email, password: credential.password) { authResult, error in
                 if let error = error {
-                    print("🔴 Register Error >>>> \(String(describing: error.localizedDescription))")
+                    print("🔴 Register Error >>>> \(error.localizedDescription)")
                     return promise(.failure(error))
                 }
                 
@@ -60,5 +52,21 @@ class AuthService {
             }
         }
             .eraseToAnyPublisher()
+    }
+    
+    
+    /// OAuth
+    func oAuth(provider: ProviderType, credential: AuthCredential) -> AnyPublisher<AuthDataResult?, Error> {
+        return Future<AuthDataResult?, Error> { promise in
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    print("🔴 OAuth Login Error >>>> \(error.localizedDescription)")
+                    return promise(.failure(error))
+                }
+                
+                return promise(.success(authResult))
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

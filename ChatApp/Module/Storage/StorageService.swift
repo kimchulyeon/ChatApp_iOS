@@ -17,11 +17,11 @@ class StorageService {
     static let USERS_COLLECTION = DB.collection("users")
 
     /// 유저 데이터 데이터베이스에 저장
-    static func storageUserData(_ userData: UserData) -> AnyPublisher<Void, Error> {
+    static func storageUserData(_ userData: UserData) -> AnyPublisher<UserData, Error> {
         let DOCUMENT = USERS_COLLECTION.document()
         let DOCUMENT_ID = DOCUMENT.documentID
 
-        return Future<Void, Error> { promise in
+        return Future<UserData, Error> { promise in
             let data: [String: Any] = [
                 "userId": userData.userId ?? "",
                 "documentId": DOCUMENT_ID,
@@ -32,10 +32,15 @@ class StorageService {
             ]
 
             print("\n\(#file)파일\n \(#line)줄\n \(#function)함수\n데이터베이스에 유저 정보 저장 >>>> \n")
+            let userData = UserData(userId: userData.userId ?? "",
+                                    documentId: DOCUMENT_ID,
+                                    name: userData.name ?? "",
+                                    email: userData.email ?? "",
+                                    provider: userData.provider ?? "")
             
             DOCUMENT.setData(data) { error in
                 if let error = error { promise(.failure(error)) }
-                else { promise(.success(())) }
+                else { promise(.success(userData)) }
             }
         }
             .eraseToAnyPublisher()
@@ -59,7 +64,11 @@ class StorageService {
                                             email: storedData["email"] as? String,
                                             provider: storedData["provider"] as? String)
                     
+                    print("🔵 데이터베이스에 있는 유저입니다 <<<< ")
                     promise(.success(userData))
+                } else {
+                    print("🌕 데이터베이스에 없는 유저입니다 <<<< ")
+                    return promise(.failure(AuthError.noDataInDB))
                 }
             }
         }.eraseToAnyPublisher()

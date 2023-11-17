@@ -70,7 +70,7 @@ class RegisterViewModel {
                 }
 
                 weakSelf.isLoading = true
-                let credential = AuthCredential(email: weakSelf.email, 
+                let credential = AuthCredentialWithImg(email: weakSelf.email, 
                                                 password: weakSelf.password,
                                                 name: weakSelf.name,
                                                 provider: .email,
