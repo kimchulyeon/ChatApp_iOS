@@ -1,4 +1,4 @@
-# Combine + MVVM + Chat Project
+# Combine + MVVM + Chat Project
 
 <br/>
 
