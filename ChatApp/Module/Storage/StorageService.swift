@@ -77,11 +77,15 @@ class StorageService {
     }
     
     /// 이미지 업로드
-    static func uploadImage(with userId: String, _ image: UIImage) -> AnyPublisher<Void, Error> {
+    static func uploadImage(with userId: String?, _ image: UIImage) -> AnyPublisher<Void, Error> {
         return Future<Void, Error> { promise in
-            let pathString = "users/\(userId)/profile"
+            guard let uid = userId else { return promise(.failure(AuthError.unknown)) }
+            
+            let pathString = "users/\(uid)/profile"
             let pathRef = FILE_DB.reference(withPath: pathString)
+            
             guard let imageData = image.jpegData(compressionQuality: 0.75) else { return }
+            
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
             

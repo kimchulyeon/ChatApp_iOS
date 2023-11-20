@@ -47,6 +47,10 @@ class RegisterViewModel {
 
     //MARK: - method
     private func bind() {
+        bindPickerImage()
+    }
+
+    private func bindPickerImage() {
         $pickerResults
             .filter { $0.isEmpty == false }
             .sink { [weak self] results in
@@ -61,7 +65,6 @@ class RegisterViewModel {
             }
             .store(in: &cancellables)
     }
-
 
     func handleRegister() -> AnyPublisher<AuthResult, Never> {
         return registerValidPublisher
@@ -83,6 +86,9 @@ class RegisterViewModel {
                 return AuthService.shared.register(credential: credential)
                     .flatMap { userData in
                         StorageService.storageUserData(userData)
+                    }
+                    .flatMap { userData in
+                        StorageService.uploadImage(with: userData.userId, weakSelf.image ?? UIImage(named: "chat_logo")!)
                     }
                     .map { _ in AuthResult.success }
                     .replaceError(with: AuthResult.failure(error: AuthError.registerError))
