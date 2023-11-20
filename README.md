@@ -14,7 +14,7 @@
 ## 이메일 회원가입 기능
 
 - 파이어베이스 회원가입 : Credential 반환 
-- 반환된 authResult 데이터들을 파이어베이스 DB에 저장 (DB Document명을 userID로 설정)
+- 반환된 authResult 데이터들을 파이어베이스 DB에 저장 (DB Document명을 userID로 설정)
 
 <br/>
 
@@ -40,7 +40,7 @@
 ### ✅ 로그인 / 회원가입 로직, 책임 분리
 > 파이어베이스 Auth 모듈 | 
 
-> Apple Auth 모듈 | 
+> Apple Auth 모듈 | 
 
 > Google Auth 모듈 | 
 
@@ -57,7 +57,7 @@
 > 뷰컨트롤러에서는 뷰모델에 정의된 퍼블리셔와 바인딩을 해주고 비즈니스 로직은 뷰모델에서 처리하게끔 작업
 
 **UITextField의 입력값 바인딩**
-> CombineCocoa의 textPublisher로 뷰모델의 email 퍼블리셔에 assign(to:on:)으로 할당
+> CombineCocoa의 textPublisher로 뷰모델의 email 퍼블리셔에 assign(to: on:)으로 할당
 ```
 emailTextField.textPublisher.compactMap { $0 }.assign(to: \.email, on: viewModel).store(in: &cancellables)
 ```
@@ -106,7 +106,7 @@ var loginResultPublisher: AnyPublisher<Void, Never> {
 
 **파이어베이스 로그인 + Combine**
 
-> AnyPublisher<로그인데이터, Error>를 반환
+> AnyPublisher<로그인데이터, Error>를 반환
 
 ```
 func login(email: String, password: String) -> AnyPublisher<AuthDataResult?, Error> {
