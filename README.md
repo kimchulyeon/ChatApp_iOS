@@ -11,7 +11,7 @@
 
 <br/>
 
-## 이메일 회원가입 기능
+## 이메일 회원가입 기능
 
 - 파이어베이스 회원가입 : Credential 반환 
 - 반환된 authResult 데이터들을 파이어베이스 DB에 저장 (DB Document명을 userID로 설정)
