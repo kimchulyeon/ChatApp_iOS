@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SDWebImage
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
@@ -52,7 +53,7 @@ class StorageService {
     /// userID로 해당하는 사용자 데이터 DB에서 가져오기
     static func getUserData(with authResult: AuthDataResult?) -> AnyPublisher<UserData, Error> {
         return Future<UserData, Error> { promise in
-            guard let userId = authResult?.user.uid else { return promise(.failure(AuthError.loginError)) }
+            guard let userId = authResult?.user.uid else { return promise(.failure(AuthError.missingUID)) }
             
             USERS_COLLECTION.whereField("userId", isEqualTo: userId).getDocuments { snapshot, error in
                 if let error = error { return promise(.failure(error)) }
@@ -79,12 +80,15 @@ class StorageService {
     /// 이미지 업로드
     static func uploadImage(with userId: String?, _ image: UIImage) -> AnyPublisher<Void, Error> {
         return Future<Void, Error> { promise in
-            guard let uid = userId else { return promise(.failure(AuthError.unknown)) }
+            guard let uid = userId else { return promise(.failure(AuthError.missingUID)) }
             
             let pathString = "users/\(uid)/profile"
             let pathRef = FILE_DB.reference(withPath: pathString)
             
-            guard let imageData = image.jpegData(compressionQuality: 0.75) else { return }
+            let targetSize = CGSize(width: 600, height: 600)
+            let resizedImage = image.sd_resizedImage(with: targetSize, scaleMode: .aspectFill)
+            
+            guard let imageData = resizedImage?.jpegData(compressionQuality: 0.75) else { return }
             
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"

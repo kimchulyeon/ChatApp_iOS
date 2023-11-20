@@ -23,6 +23,7 @@ enum AuthError: Error {
     case registerError
     case loginError
     case noDataInDB
+    case missingUID
 }
 
 enum AuthResult {
