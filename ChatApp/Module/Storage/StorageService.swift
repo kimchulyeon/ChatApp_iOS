@@ -76,6 +76,7 @@ class StorageService {
         }.eraseToAnyPublisher()
     }
     
+    /// 이미지 업로드
     static func uploadImage(with userId: String, _ image: UIImage) -> AnyPublisher<Void, Error> {
         return Future<Void, Error> { promise in
             let pathString = "users/\(userId)/profile"
