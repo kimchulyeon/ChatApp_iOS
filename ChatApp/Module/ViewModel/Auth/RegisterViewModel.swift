@@ -90,6 +90,9 @@ class RegisterViewModel {
                     .flatMap { userData in
                         StorageService.uploadImage(with: userData.userId, weakSelf.image ?? UIImage(named: "chat_logo")!)
                     }
+                    .map { url in
+                        UserDefaultsManager.saveUserImage(url: url)
+                    }
                     .map { _ in AuthResult.success }
                     .replaceError(with: AuthResult.failure(error: AuthError.registerError))
                     .handleEvents(receiveCompletion: { _ in

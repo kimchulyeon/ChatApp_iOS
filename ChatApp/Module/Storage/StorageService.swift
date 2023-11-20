@@ -78,14 +78,15 @@ class StorageService {
     }
     
     /// 이미지 업로드
-    static func uploadImage(with userId: String?, _ image: UIImage) -> AnyPublisher<Void, Error> {
-        return Future<Void, Error> { promise in
+    @discardableResult
+    static func uploadImage(with userId: String?, _ image: UIImage) -> AnyPublisher<String?, Error> {
+        return Future<String?, Error> { promise in
             guard let uid = userId else { return promise(.failure(AuthError.missingUID)) }
             
             let pathString = "users/\(uid)/profile"
             let pathRef = FILE_DB.reference(withPath: pathString)
             
-            let targetSize = CGSize(width: 600, height: 600)
+            let targetSize = CGSize(width: 300, height: 300)
             let resizedImage = image.sd_resizedImage(with: targetSize, scaleMode: .aspectFill)
             
             guard let imageData = resizedImage?.jpegData(compressionQuality: 0.75) else { return }
@@ -97,7 +98,14 @@ class StorageService {
                 if let error = error {
                     promise(.failure(error))
                 }
-                promise(.success(()))
+                
+                pathRef.downloadURL { url, error in
+                    if let error = error {
+                        promise(.failure(error))
+                    }
+                    
+                    promise(.success(url?.absoluteString))
+                }
             }
         }
         .eraseToAnyPublisher()

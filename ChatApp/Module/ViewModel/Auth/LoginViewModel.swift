@@ -93,7 +93,9 @@ class LoginViewModel {
                     })
             }
             .map { userData in
+                #warning("UserDefaults에 이미지 저장해야됨")
                 UserDefaultsManager.saveUserInfo(userData: userData)
+                StorageService.uploadImage(with: userData.userId, UIImage(named: "chat_logo")!)
                 return AuthResult.success
             }
             .replaceError(with: AuthResult.failure(error: AuthError.loginError))

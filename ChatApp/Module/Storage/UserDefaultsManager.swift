@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Combine
 
 struct UserDefaultsManager {
-    static func saveUserInfo(userData: UserData) {
+    @discardableResult
+    static func saveUserInfo(userData: UserData) -> AnyPublisher<UserData, Never> {
         UserDefaults.standard.set(userData.name, forKey: "Name")
         UserDefaults.standard.set(userData.email, forKey: "Email")
         UserDefaults.standard.set(userData.documentId, forKey: "DocumentId")
@@ -16,6 +18,12 @@ struct UserDefaultsManager {
         
         print(userData)
         print("\n\(#file)파일\n \(#line)줄\n \(#function)함수\n🟢 UserDefaults에 사용자 정보 저장 >>>> \n")
+        return Just(userData).eraseToAnyPublisher()
+    }
+    
+    static func saveUserImage(url: String?) {
+        guard let url = url else { return }
+        UserDefaults.standard.set(url, forKey: "Image")
     }
     
     static func resetUserDefaults() {
