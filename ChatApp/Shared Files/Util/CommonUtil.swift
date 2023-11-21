@@ -31,10 +31,11 @@ final class CommonUtil {
         
         do {
             try Auth.auth().signOut()
-            UserDefaultsManager.resetUserDefaults()
-            changeRootView(to: navigationController)
         } catch {
             print("🔴 Error while signing out")
         }
+        
+        UserDefaultsManager.resetUserDefaults()
+        changeRootView(to: navigationController)
     }
 }

@@ -120,7 +120,7 @@ extension LoginViewModel {
         switch type {
             case .apple: servicePublisher = AppleService.shared.appleOAuthCredentialPublisher
             case .google: servicePublisher = GoogleService.shared.googleOAuthCredentialPublisher
-            default: servicePublisher = Fail(error: AuthError.loginError).eraseToAnyPublisher()
+            case .email: servicePublisher = Empty<AuthCredential, Error>().eraseToAnyPublisher()
         }
         
         return servicePublisher
