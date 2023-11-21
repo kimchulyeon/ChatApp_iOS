@@ -14,12 +14,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let scene = scene as? UIWindowScene else { return }
-        let loginViewModel = LoginViewModel()
-        let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
         window = UIWindow(windowScene: scene)
         window?.makeKeyAndVisible()
         window?.backgroundColor = ThemeColor.bg
-        window?.rootViewController = navigationController
+        UserDefaultsManager.checkUserDefaultsValues()
+        setRootViewController(window: window)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -53,3 +52,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+
+// helper
+extension SceneDelegate {
+    /// UserDefaults에 docID가 저장되어 있으면 로그인된 유저
+    private func setRootViewController(window: UIWindow?) {
+        let loginViewModel = LoginViewModel()
+        let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
+        let chatViewModel = ChatViewModel()
+        let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
+        
+        if let storedDocID = UserDefaultsManager.getSingleData(key: Key.DocID) as? String, storedDocID.isEmpty == false {
+            window?.rootViewController = c_navigationController
+            return
+        }
+
+        window?.rootViewController = navigationController
+    }
+}

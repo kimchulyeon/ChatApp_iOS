@@ -35,67 +35,64 @@ class LoginViewModel {
 
 
     //MARK: - method
-    
-    
     func handleLogin() -> AnyPublisher<AuthResult, Never> {
         loginValidPublisher
             .flatMap { [weak self] isValid in
-            guard let weakSelf = self else { return Just(AuthResult.failure(error: AuthError.loginError)).eraseToAnyPublisher() }
+                guard let weakSelf = self else { return Just(AuthResult.failure(error: AuthError.loginError)).eraseToAnyPublisher() }
 
-            if isValid == false {
-                return Just(AuthResult.failure(error: AuthError.textFieldEmpty)).eraseToAnyPublisher()
-            }
+                if isValid == false {
+                    return Just(AuthResult.failure(error: AuthError.textFieldEmpty)).eraseToAnyPublisher()
+                }
 
-            weakSelf.isLoading = true
-            return AuthService.shared.login(email: weakSelf.email, password: weakSelf.password)
-                .flatMap { authResult in
-                    return StorageService.getUserData(with: authResult)
-                }
-                .map { userData in
-                    UserDefaultsManager.saveUserInfo(userData: userData)
-                    return AuthResult.success
-                }
-                .replaceError(with: AuthResult.failure(error: AuthError.loginError))
-                .handleEvents(receiveCompletion: { _ in
-                    weakSelf.isLoading = false
-                })
-                .eraseToAnyPublisher()
+                weakSelf.isLoading = true
+                return AuthService.shared.login(email: weakSelf.email, password: weakSelf.password)
+                    .flatMap { authResult in
+                        return StorageService.getUserData(with: authResult)
+                    }
+                    .map { userData in
+                        UserDefaultsManager.saveUserInfo(userData: userData)
+                        return AuthResult.success
+                    }
+                    .replaceError(with: AuthResult.failure(error: AuthError.loginError))
+                    .handleEvents(receiveCompletion: { _ in
+                        weakSelf.isLoading = false
+                    })
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
 
 
     func handleOAuthLogin(type: ProviderType) -> AnyPublisher<AuthResult, Never> {
-        var servicePublisher: AnyPublisher<AuthCredential, Error>
-        switch type {
-            case .apple: servicePublisher = AppleService.shared.appleOAuthCredentialPublisher
-            case .google: servicePublisher = GoogleService.shared.googleOAuthCredentialPublisher
-            default: servicePublisher = Fail(error: AuthError.loginError).eraseToAnyPublisher()
-        }
-        
-        return servicePublisher
+        return oAuthCredentialPublisher(according: type)
             .flatMap { [weak self] oAuthCredential in
                 self?.isLoading = true
                 return AuthService.shared.oAuth(provider: .apple, credential: oAuthCredential)
             }
             .flatMap { [weak self] authResult in
                 return StorageService.getUserData(with: authResult)
-                    .catch { _ in // 기존 유저
+                    .catch { _ in // 신규 유저
                         let userData = UserData(userId: authResult?.user.uid,
                                                 name: authResult?.user.displayName,
                                                 email: authResult?.user.email,
                                                 provider: type.rawValue)
                         
-                        return StorageService.storageUserData(userData)
+                        return StorageService.saveUserData(userData)
                     }
-                    .handleEvents(receiveCompletion: { _ in
+                    .handleEvents(receiveCompletion: { [weak self] _ in
                         self?.isLoading = false
                     })
             }
-            .map { userData in
-                #warning("UserDefaults에 이미지 저장해야됨")
+            .flatMap { userData in
                 UserDefaultsManager.saveUserInfo(userData: userData)
+            }
+            .flatMap { userData in
                 StorageService.uploadImage(with: userData.userId, UIImage(named: "chat_logo")!)
+            }
+            .flatMap { url in
+                UserDefaultsManager.saveUserImage(url: url)
+            }
+            .map { _ in
                 return AuthResult.success
             }
             .replaceError(with: AuthResult.failure(error: AuthError.loginError))
@@ -103,5 +100,29 @@ class LoginViewModel {
                 self?.isLoading = false
             })
             .eraseToAnyPublisher()
+    }
+    
+    func afterSuccessLogin() {
+        let chatViewModel = ChatViewModel()
+        let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
+        
+        CommonUtil.changeRootView(to: c_navigationController)
+    }
+}
+
+
+//MARK: - helper
+extension LoginViewModel {
+    /// 로그인 제공자 타입에 따라 반환받은 Credential를 가진 퍼블리셔를 리턴
+    private func oAuthCredentialPublisher(according type: ProviderType) -> AnyPublisher<AuthCredential, Error> {
+        var servicePublisher: AnyPublisher<AuthCredential, Error>
+        
+        switch type {
+            case .apple: servicePublisher = AppleService.shared.appleOAuthCredentialPublisher
+            case .google: servicePublisher = GoogleService.shared.googleOAuthCredentialPublisher
+            default: servicePublisher = Fail(error: AuthError.loginError).eraseToAnyPublisher()
+        }
+        
+        return servicePublisher
     }
 }

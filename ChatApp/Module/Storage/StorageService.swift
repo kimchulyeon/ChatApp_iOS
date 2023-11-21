@@ -20,18 +20,18 @@ class StorageService {
     static let USERS_COLLECTION = DB.collection("users")
 
     /// 유저 데이터 데이터베이스에 저장
-    static func storageUserData(_ userData: UserData) -> AnyPublisher<UserData, Error> {
+    static func saveUserData(_ userData: UserData) -> AnyPublisher<UserData, Error> {
         let DOCUMENT = USERS_COLLECTION.document()
         let DOCUMENT_ID = DOCUMENT.documentID
 
         return Future<UserData, Error> { promise in
             let data: [String: Any] = [
-                "userId": userData.userId ?? "",
-                "documentId": DOCUMENT_ID,
-                "name": userData.name ?? "",
-                "email": userData.email ?? "",
-                "provider": userData.provider ?? "",
-                "createdAt": FieldValue.serverTimestamp()
+                Key.UID.value: userData.userId ?? "",
+                Key.DocID.value: DOCUMENT_ID,
+                Key.Name.value: userData.name ?? "",
+                Key.Email.value: userData.email ?? "",
+                Key.Provider.value: userData.provider ?? "",
+                Key.CreatedAt.value: FieldValue.serverTimestamp()
             ]
 
             print("\n\(#file)파일\n \(#line)줄\n \(#function)함수\n데이터베이스에 유저 정보 저장 >>>> \n")
@@ -55,17 +55,17 @@ class StorageService {
         return Future<UserData, Error> { promise in
             guard let userId = authResult?.user.uid else { return promise(.failure(AuthError.missingUID)) }
             
-            USERS_COLLECTION.whereField("userId", isEqualTo: userId).getDocuments { snapshot, error in
+            USERS_COLLECTION.whereField(Key.UID.value, isEqualTo: userId).getDocuments { snapshot, error in
                 if let error = error { return promise(.failure(error)) }
                 
                 if let snapshot = snapshot, let userDocument = snapshot.documents.first {
                     let storedData = userDocument.data()
-                    let userData = UserData(createdAt: storedData["createdAt"] as? Date,
-                                            userId: storedData["userId"] as? String,
+                    let userData = UserData(createdAt: storedData[Key.CreatedAt.value] as? Date,
+                                            userId: storedData[Key.UID.value] as? String,
                                             documentId: userDocument.documentID,
-                                            name: storedData["name"] as? String,
-                                            email: storedData["email"] as? String,
-                                            provider: storedData["provider"] as? String)
+                                            name: storedData[Key.Name.value] as? String,
+                                            email: storedData[Key.Email.value] as? String,
+                                            provider: storedData[Key.Provider.value] as? String)
                     
                     print("🔵 데이터베이스에 있는 유저입니다 <<<< ")
                     promise(.success(userData))

@@ -85,7 +85,7 @@ class RegisterViewModel {
                 
                 return AuthService.shared.register(credential: credential)
                     .flatMap { userData in
-                        StorageService.storageUserData(userData)
+                        StorageService.saveUserData(userData)
                     }
                     .flatMap { userData in
                         StorageService.uploadImage(with: userData.userId, weakSelf.image ?? UIImage(named: "chat_logo")!)

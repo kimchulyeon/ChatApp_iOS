@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 final class CommonUtil {
     static func changeRootView(to vc: UIViewController) {
@@ -19,8 +20,21 @@ final class CommonUtil {
             }
 
             if let window = sceneDelegate.window {
-                UIView.transition(with: window, duration: 0.25, options: .transitionCrossDissolve, animations: { })
+                UIView.transition(with: window, duration: 0.15, options: .transitionCrossDissolve, animations: { })
             }
+        }
+    }
+    
+    static func handleLogout() {
+        let loginViewModel = LoginViewModel()
+        let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
+        
+        do {
+            try Auth.auth().signOut()
+            UserDefaultsManager.resetUserDefaults()
+            changeRootView(to: navigationController)
+        } catch {
+            print("🔴 Error while signing out")
         }
     }
 }

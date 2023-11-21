@@ -239,7 +239,9 @@ class LoginViewController: UIViewController {
                 if isLoading {
                     weakSelf.loadingSpinner.show(in: weakSelf.view, animated: true)
                 } else {
-                    weakSelf.loadingSpinner.dismiss(animated: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        weakSelf.loadingSpinner.dismiss(animated: true)
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -256,8 +258,8 @@ class LoginViewController: UIViewController {
             .sink { [weak self] result in
                 switch result {
                 case .success:
-                    print("🟢 로그인 성공")
                     UserDefaultsManager.checkUserDefaultsValues()
+                    self?.viewModel.afterSuccessLogin()
                 case .failure(error: let error):
                     print("실패 >>>> ")
                     if error == .textFieldEmpty {
@@ -289,6 +291,7 @@ class LoginViewController: UIViewController {
         case .success:
             print("🟢 로그인 성공")
             UserDefaultsManager.checkUserDefaultsValues()
+            viewModel.afterSuccessLogin()
         case .failure(error: let error):
             print("🔴 Error \(error)")
             view.showAlert(content: "로그인에 실패하였습니다")
