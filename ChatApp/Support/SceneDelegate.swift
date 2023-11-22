@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import Combine
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var cancellables = Set<AnyCancellable>()
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -17,7 +19,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: scene)
         window?.makeKeyAndVisible()
         window?.backgroundColor = ThemeColor.bg
-        UserDefaultsManager.checkUserDefaultsValues()
         setRootViewController(window: window)
     }
 
@@ -57,16 +58,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
     /// UserDefaults에 docID가 저장되어 있으면 로그인된 유저
     private func setRootViewController(window: UIWindow?) {
+        checkUserDefaultsDataForRootViewController(window)
+            .sink { [weak self] isLogin in
+                if isLogin == false {
+                    self?.setBasicRootViewController(window)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func checkUserDefaultsDataForRootViewController(_ window: UIWindow?) -> AnyPublisher<Bool, Never> {
+        UserDefaultsManager.getSingleData(key: Key.DocID)
+            .flatMap { data in
+                guard let data = data as? String, data.isEmpty == false else { return Just(false).eraseToAnyPublisher() }
+                
+                let chatViewModel = ChatViewModel()
+                let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
+                
+                window?.rootViewController = c_navigationController
+                return Just(true).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func setBasicRootViewController(_ window: UIWindow?) {
         let loginViewModel = LoginViewModel()
         let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
-        let chatViewModel = ChatViewModel()
-        let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
-        
-        if let storedDocID = UserDefaultsManager.getSingleData(key: Key.DocID) as? String, storedDocID.isEmpty == false {
-            window?.rootViewController = c_navigationController
-            return
-        }
-
         window?.rootViewController = navigationController
     }
 }

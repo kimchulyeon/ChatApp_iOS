@@ -6,15 +6,35 @@
 //
 
 import UIKit
+import SnapKit
+import Combine
+import CombineCocoa
+import CombineDataSources
 
 class ChatViewController: UIViewController {
     //MARK: - properties
     private lazy var logoutButton: UIBarButtonItem = {
-        let btn = UIBarButtonItem(title: "로그아웃", style: .plain, target: self, action: #selector(handleLogout))
+        let btn = UIBarButtonItem(title: "로그아웃", style: .plain, target: self, action: nil)
+        btn.tapPublisher.sink { [unowned self] _ in viewModel.handleLogout() }.store(in: &cancellables)
         return btn
     }()
     
+    private lazy var newChatButton: UIBarButtonItem = {
+        let btn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: nil)
+        btn.tapPublisher.sink { [unowned self] _ in viewModel.handleNewChatButton(self) }.store(in: &cancellables)
+        return btn
+    }()
+    
+    private let chatTableView: UITableView = {
+        let tv = UITableView()
+        tv.backgroundColor = .red
+        return tv
+    }()
+    
     private let viewModel: ChatViewModel
+    private var cancellables = Set<AnyCancellable>()
+    
+    
     
     //MARK: - Lifecycle
     init(viewModel: ChatViewModel) {
@@ -29,16 +49,41 @@ class ChatViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        bind()
     }
+    
+    
     
     //MARK: - method
     private func setupUI() {
         view.backgroundColor = ThemeColor.bg
-        
         navigationItem.leftBarButtonItem = logoutButton
+        navigationItem.rightBarButtonItem = newChatButton
+        
+        view.addSubview(chatTableView)
+        chatTableView.snp.makeConstraints { make in make.edges.equalTo(view.safeAreaLayoutGuide.snp.edges) }
     }
     
-    @objc func handleLogout() {
-        CommonUtil.handleLogout()
+    private func bind() {
+        bindNavTitle()
+        bindTableView()
+    }
+    
+    private func bindNavTitle() {
+        viewModel.$navTitle
+            .sink { [weak self] title in
+                guard let title = title else { return }
+                self?.title = title
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func bindTableView() {
+        viewModel.chatList
+            .bind(subscriber: chatTableView.rowsSubscriber(cellIdentifier: ChatCell.identifier, cellType: ChatCell.self) { cell, indexPath, model in
+                
+                
+            })
+            .store(in: &cancellables)
     }
 }

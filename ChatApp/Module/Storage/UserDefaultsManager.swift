@@ -48,8 +48,8 @@ struct UserDefaultsManager {
         print("폴더 ID : \(documentId ?? "")")
         print("유저 ID : \(userId ?? "")")
     }
-    
-    static func getSingleData(key: Key) -> Any? {
-        return UserDefaults.standard.object(forKey: key.value)
+   
+    static func getSingleData(key: Key) -> AnyPublisher<Any?, Never> {
+        return Just(UserDefaults.standard.object(forKey: key.value)).eraseToAnyPublisher()
     }
 }

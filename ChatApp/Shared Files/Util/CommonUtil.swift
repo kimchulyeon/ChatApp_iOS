@@ -24,18 +24,4 @@ final class CommonUtil {
             }
         }
     }
-    
-    static func handleLogout() {
-        let loginViewModel = LoginViewModel()
-        let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
-        
-        do {
-            try Auth.auth().signOut()
-        } catch {
-            print("🔴 Error while signing out")
-        }
-        
-        UserDefaultsManager.resetUserDefaults()
-        changeRootView(to: navigationController)
-    }
 }

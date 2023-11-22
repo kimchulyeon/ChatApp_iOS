@@ -70,7 +70,7 @@ class LoginViewModel {
                 return AuthService.shared.oAuth(provider: .apple, credential: oAuthCredential)
             }
             .flatMap { [weak self] authResult in
-                return StorageService.getUserData(with: authResult)
+                StorageService.getUserData(with: authResult)
                     .catch { _ in // 신규 유저
                         let userData = UserData(userId: authResult?.user.uid,
                                                 name: authResult?.user.displayName,
@@ -93,7 +93,7 @@ class LoginViewModel {
                 UserDefaultsManager.saveUserImage(url: url)
             }
             .map { _ in
-                return AuthResult.success
+                AuthResult.success
             }
             .replaceError(with: AuthResult.failure(error: AuthError.loginError))
             .handleEvents(receiveCompletion: { [weak self] _ in
