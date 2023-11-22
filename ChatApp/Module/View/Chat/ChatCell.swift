@@ -18,12 +18,18 @@ class ChatCell: UITableViewCell {
         return iv
     }()
     
-    private let name: UILabel = {
+    private let nameLabel: UILabel = {
         let lb = UILabel()
         return lb
     }()
     
-    private let recentMessage: UILabel = {
+    private let recentMessageLabel: UILabel = {
+        let lb = UILabel()
+        lb.textColor = ThemeColor.lightGray
+        return lb
+    }()
+    
+    private let dateLabel: UILabel = {
         let lb = UILabel()
         lb.textColor = ThemeColor.lightGray
         return lb
@@ -41,6 +47,9 @@ class ChatCell: UITableViewCell {
     
     //MARK: - method
     private func setupUI() {
+        backgroundColor = .clear
+        selectionStyle = .none
+        
         addSubview(profileImageView)
         profileImageView.snp.makeConstraints { make in
             make.centerY.equalTo(snp.centerY)

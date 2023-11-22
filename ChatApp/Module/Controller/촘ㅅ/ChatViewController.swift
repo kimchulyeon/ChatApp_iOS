@@ -27,14 +27,12 @@ class ChatViewController: UIViewController {
     
     private let chatTableView: UITableView = {
         let tv = UITableView()
-        tv.backgroundColor = .red
+        tv.backgroundColor = ThemeColor.bg
         return tv
     }()
     
     private let viewModel: ChatViewModel
     private var cancellables = Set<AnyCancellable>()
-    
-    
     
     //MARK: - Lifecycle
     init(viewModel: ChatViewModel) {
