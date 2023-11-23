@@ -59,7 +59,8 @@ class ChatViewModel {
     }
     
     func handleNewChatButton(_ vc: UIViewController) {
-        let newChatVC = NewChatViewController()
+        let viewModel = NewChatViewModel()
+        let newChatVC = NewChatViewController(viewModel: viewModel)
         let nav = UINavigationController(rootViewController: newChatVC)
         vc.present(nav, animated: true)
     }
@@ -70,7 +71,7 @@ class ChatViewModel {
 //MARK: - UITableView
 extension ChatViewModel {
     /// UITableViewDiffableDatasource 정의 >>>>
-    func setupTableViewDatasource(tableView: UITableView) {
+    func setupTableView(_ tableView: UITableView) {
         dataSource = UITableViewDiffableDataSource<Section, Chat>(tableView: tableView, cellProvider: { [weak self] tableView, indexPath, itemIdentifier in
             
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.identifier, for: indexPath) as? ChatCell else { return UITableViewCell() }

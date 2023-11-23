@@ -78,6 +78,6 @@ class ChatViewController: UIViewController {
     }
     
     private func bindTableView() {
-        viewModel.setupTableViewDatasource(tableView: chatTableView)
+        viewModel.setupTableView(chatTableView)
     }
 }

@@ -42,7 +42,7 @@ class ChatCell: UITableViewCell {
 
     private let dateLabel: UILabel = {
         let lb = UILabel()
-        lb.font = ThemeFont.regular(size: 13)
+        lb.font = ThemeFont.regular(size: 10)
         lb.textColor = .darkGray
         return lb
     }()
@@ -72,15 +72,12 @@ class ChatCell: UITableViewCell {
         }
 
         addSubview(dateLabel)
-        dateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateLabel.snp.makeConstraints { make in
             make.centerY.equalTo(profileImageView.snp.centerY)
             make.trailing.equalTo(snp.trailing).offset(-10)
         }
 
         addSubview(vStackView)
-        vStackView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        vStackView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         vStackView.snp.makeConstraints { make in
             make.centerY.equalTo(profileImageView.snp.centerY)
             make.leading.equalTo(profileImageView.snp.trailing).offset(16)
