@@ -52,7 +52,6 @@ class ChatViewController: UIViewController {
     }
     
     
-    
     //MARK: - method
     private func setupUI() {
         view.backgroundColor = ThemeColor.bg
