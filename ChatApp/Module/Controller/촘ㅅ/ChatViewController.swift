@@ -28,6 +28,7 @@ class ChatViewController: UIViewController {
     private let chatTableView: UITableView = {
         let tv = UITableView()
         tv.backgroundColor = ThemeColor.bg
+        tv.register(ChatCell.self, forCellReuseIdentifier: ChatCell.identifier)
         return tv
     }()
     
@@ -77,11 +78,6 @@ class ChatViewController: UIViewController {
     }
     
     private func bindTableView() {
-        viewModel.chatList
-            .bind(subscriber: chatTableView.rowsSubscriber(cellIdentifier: ChatCell.identifier, cellType: ChatCell.self) { cell, indexPath, model in
-                
-                
-            })
-            .store(in: &cancellables)
+        viewModel.setupTableViewDatasource(tableView: chatTableView)
     }
 }

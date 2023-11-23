@@ -9,12 +9,20 @@ import UIKit
 import Combine
 import FirebaseAuth
 
+enum Section: CaseIterable {
+    case chat
+}
+
 class ChatViewModel {
     //MARK: - properties
     private var cancellables = Set<AnyCancellable>()
     
     @Published var navTitle: String?
-    var chatList = PassthroughSubject<[Chat], Never>()
+    
+    // TableView
+    private (set) var chatList = CurrentValueSubject<[Chat], Never>(Chat.mock)
+    private var dataSource: UITableViewDiffableDataSource<Section, Chat>!
+    private var snapShot: NSDiffableDataSourceSnapshot<Section, Chat>!
     
     
     //MARK: - lifecycle
@@ -55,5 +63,28 @@ class ChatViewModel {
         let nav = UINavigationController(rootViewController: newChatVC)
         vc.present(nav, animated: true)
     }
+}
+
+
+
+//MARK: - UITableView
+extension ChatViewModel {
+    /// UITableViewDiffableDatasource 정의 >>>>
+    func setupTableViewDatasource(tableView: UITableView) {
+        dataSource = UITableViewDiffableDataSource<Section, Chat>(tableView: tableView, cellProvider: { [weak self] tableView, indexPath, itemIdentifier in
+            
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.identifier, for: indexPath) as? ChatCell else { return UITableViewCell() }
+            
+            let model = self?.chatList.value[indexPath.row]
+            cell.configure(model)
+            return cell
+        })
+        
+        snapShot = NSDiffableDataSourceSnapshot<Section, Chat>()
+        snapShot.appendSections(Section.allCases)
+        snapShot.appendItems(chatList.value)
+        dataSource.apply(snapShot)
+    }
+    
 }
 
