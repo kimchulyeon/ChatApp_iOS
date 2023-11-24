@@ -72,8 +72,8 @@ extension SceneDelegate {
             .flatMap { data in
                 guard let data = data as? String, data.isEmpty == false else { return Just(false).eraseToAnyPublisher() }
                 
-                let chatViewModel = ChatViewModel()
-                let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
+                let chatViewModel = ChatListViewModel()
+                let c_navigationController = UINavigationController(rootViewController: ChatListViewController(viewModel: chatViewModel))
                 
                 window?.rootViewController = c_navigationController
                 return Just(true).eraseToAnyPublisher()

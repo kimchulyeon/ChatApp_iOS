@@ -1,5 +1,5 @@
 //
-//  ChatViewController.swift
+//  ChatListViewController.swift
 //  ChatApp
 //
 //  Created by chulyeon kim on 11/21/23.
@@ -11,7 +11,7 @@ import Combine
 import CombineCocoa
 import CombineDataSources
 
-class ChatViewController: UIViewController {
+class ChatListViewController: UIViewController {
     //MARK: - properties
     private lazy var logoutButton: UIBarButtonItem = {
         let btn = UIBarButtonItem(title: "로그아웃", style: .plain, target: self, action: nil)
@@ -28,15 +28,15 @@ class ChatViewController: UIViewController {
     private let chatTableView: UITableView = {
         let tv = UITableView()
         tv.backgroundColor = ThemeColor.bg
-        tv.register(ChatCell.self, forCellReuseIdentifier: ChatCell.identifier)
+        tv.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.identifier)
         return tv
     }()
     
-    private let viewModel: ChatViewModel
+    private let viewModel: ChatListViewModel
     private var cancellables = Set<AnyCancellable>()
     
     //MARK: - Lifecycle
-    init(viewModel: ChatViewModel) {
+    init(viewModel: ChatListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,6 +77,6 @@ class ChatViewController: UIViewController {
     }
     
     private func bindTableView() {
-        viewModel.setupTableView(chatTableView)
+        viewModel.setupChatTableView(chatTableView)
     }
 }

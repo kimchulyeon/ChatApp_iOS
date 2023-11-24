@@ -2,90 +2,75 @@
 //  ChatViewModel.swift
 //  ChatApp
 //
-//  Created by chulyeon kim on 11/21/23.
+//  Created by chulyeon kim on 11/24/23.
 //
 
 import UIKit
 import Combine
-import FirebaseAuth
 
-enum Section: CaseIterable {
-    case chat
+enum ChatContentSection: CaseIterable {
+    case content
+}
+
+struct ChatContent: Hashable {
+    let id: String = UUID().uuidString
+    let content: String
+    let date: String
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 class ChatViewModel {
     //MARK: - properties
     private var cancellables = Set<AnyCancellable>()
+    private lazy var chatContents = CurrentValueSubject<[ChatContent], Never>([])
+    private var chatContentsPublisher: AnyPublisher<[ChatContent], Never> { chatContents.eraseToAnyPublisher() }
     
-    @Published var navTitle: String?
+    private var datasource: UICollectionViewDiffableDataSource<ChatContentSection, ChatContent>!
+    private var snapShot: NSDiffableDataSourceSnapshot<ChatContentSection, ChatContent>!
     
-    // TableView
-    private (set) var chatList = CurrentValueSubject<[Chat], Never>(Chat.mock)
-    private var dataSource: UITableViewDiffableDataSource<Section, Chat>!
-    private var snapShot: NSDiffableDataSourceSnapshot<Section, Chat>!
     
     
     //MARK: - lifecycle
-    init() {
-        bind()
-    }
+    init() { }
+    
+    
     
     //MARK: - method
-    private func bind() {
-        bindNavTitle()
+    
+}
+
+
+
+//MARK: - CollectionView
+extension ChatViewModel {
+    
+    func setupCollectionView(_ collectionView: UICollectionView) {
+        datasource = setupCollectionViewDatasource(collectionView)
+        updateCollectionViewDatasource(with: chatContentsPublisher)
     }
     
-    private func bindNavTitle() {
-        UserDefaultsManager.getSingleData(key: Key.Name)
-            .sink { [weak self] data in
-                guard let data = data as? String, data.isEmpty == false else { return }
-                self?.navTitle = data
+    private func setupCollectionViewDatasource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<ChatContentSection, ChatContent> {
+        UICollectionViewDiffableDataSource<ChatContentSection, ChatContent>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+            
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatContentCell.identifier, for: indexPath) as? ChatContentCell else { return UICollectionViewCell() }
+            cell.configure()
+            return cell
+        })
+    }
+    
+    private func updateCollectionViewDatasource(with chatContentsPublisher: AnyPublisher<[ChatContent], Never>) {
+        chatContentsPublisher
+            .sink { [weak self] chatContents in
+                var newSnapShot = NSDiffableDataSourceSnapshot<ChatContentSection, ChatContent>()
+                newSnapShot.appendSections(ChatContentSection.allCases)
+                newSnapShot.appendItems(chatContents)
+                self?.snapShot = newSnapShot
+                guard let snapShot = self?.snapShot else { return }
+                self?.datasource.apply(snapShot, animatingDifferences: false, completion: nil)
             }
             .store(in: &cancellables)
     }
-    
-    func handleLogout() {
-        let loginViewModel = LoginViewModel()
-        let navigationController = UINavigationController(rootViewController: LoginViewController(viewModel: loginViewModel))
-        
-        do {
-            try Auth.auth().signOut()
-        } catch {
-            print("🔴 Error while signing out")
-        }
-        
-        UserDefaultsManager.resetUserDefaults()
-        CommonUtil.changeRootView(to: navigationController)
-    }
-    
-    func handleNewChatButton(_ vc: UIViewController) {
-        let viewModel = NewChatViewModel()
-        let newChatVC = NewChatViewController(viewModel: viewModel)
-        let nav = UINavigationController(rootViewController: newChatVC)
-        vc.present(nav, animated: true)
-    }
 }
-
-
-
-//MARK: - UITableView
-extension ChatViewModel {
-    /// UITableViewDiffableDatasource 정의 >>>>
-    func setupTableView(_ tableView: UITableView) {
-        dataSource = UITableViewDiffableDataSource<Section, Chat>(tableView: tableView, cellProvider: { [weak self] tableView, indexPath, itemIdentifier in
-            
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.identifier, for: indexPath) as? ChatCell else { return UITableViewCell() }
-            
-            let model = self?.chatList.value[indexPath.row]
-            cell.configure(model)
-            return cell
-        })
-        
-        snapShot = NSDiffableDataSourceSnapshot<Section, Chat>()
-        snapShot.appendSections(Section.allCases)
-        snapShot.appendItems(chatList.value)
-        dataSource.apply(snapShot)
-    }
-    
-}
-

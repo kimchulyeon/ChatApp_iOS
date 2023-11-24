@@ -103,8 +103,8 @@ class LoginViewModel {
     }
     
     func afterSuccessLogin() {
-        let chatViewModel = ChatViewModel()
-        let c_navigationController = UINavigationController(rootViewController: ChatViewController(viewModel: chatViewModel))
+        let chatViewModel = ChatListViewModel()
+        let c_navigationController = UINavigationController(rootViewController: ChatListViewController(viewModel: chatViewModel))
         
         CommonUtil.changeRootView(to: c_navigationController)
     }
