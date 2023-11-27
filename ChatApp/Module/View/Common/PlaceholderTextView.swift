@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import Combine
+import CombineCocoa
 
 class PlaceholderTextView: UITextView {
     //MARK: - properties
@@ -17,11 +19,14 @@ class PlaceholderTextView: UITextView {
         return lb
     }()
     
+    private var cancellables = Set<AnyCancellable>()
+    
     //MARK: - lifecycle
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         
         setupUI()
+        bind()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -29,8 +34,8 @@ class PlaceholderTextView: UITextView {
     
     //MARK: - method
     private func setupUI() {
-        backgroundColor = ThemeColor.moreLightGray
         addCornerRadius(radius: 8)
+        backgroundColor = ThemeColor.moreLightGray
         isScrollEnabled = false
         font = ThemeFont.regular(size: 14)
         
@@ -45,5 +50,14 @@ class PlaceholderTextView: UITextView {
     func configurePlaceholderText(with isEmpty: Bool) {
         if isEmpty { placeholderLabel.text = "메세지를 입력하세요" }
         else { placeholderLabel.text = "" }
+    }
+    
+    private func bind() {
+        self.textPublisher
+            .sink { [unowned self] text in
+                guard let text = text else { return }
+                configurePlaceholderText(with: text.isEmpty)
+            }
+            .store(in: &cancellables)
     }
 }

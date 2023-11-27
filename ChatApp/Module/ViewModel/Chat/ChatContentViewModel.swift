@@ -58,14 +58,6 @@ class ChatContentViewModel {
 
 
     //MARK: - method
-
-}
-
-
-
-//MARK: - CollectionView
-extension ChatContentViewModel {
-
     func setupCollectionView(_ collectionView: UICollectionView) {
         datasource = setupCollectionViewDatasource(collectionView)
         updateCollectionViewDatasource(with: chatContentsPublisher)
@@ -92,4 +84,5 @@ extension ChatContentViewModel {
             }
             .store(in: &cancellables)
     }
+
 }

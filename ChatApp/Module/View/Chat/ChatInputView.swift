@@ -15,6 +15,11 @@ class ChatInputView: UIView {
     private var cancellables = Set<AnyCancellable>()
     
     private let textInputView = PlaceholderTextView()
+    private let dividerView: UIView = {
+        let v = UIView()
+        v.backgroundColor = ThemeColor.lightGray
+        return v
+    }()
     
     #warning("버튼들")
     
@@ -23,7 +28,6 @@ class ChatInputView: UIView {
         super.init(frame: frame)
         
         setupUI()
-        bind()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -32,26 +36,20 @@ class ChatInputView: UIView {
     //MARK: - method
     private func setupUI() {
         backgroundColor = .white
+        
+        addSubview(dividerView)
+        dividerView.snp.makeConstraints { make in
+            make.height.equalTo(1)
+            make.top.leading.trailing.equalToSuperview()
+        }
+        
         addSubview(textInputView)
         textInputView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(8)
-            make.top.equalToSuperview().offset(16)
+            make.top.equalTo(dividerView.snp.bottom).offset(16)
             make.bottom.equalToSuperview().offset(-12)
             make.trailing.equalToSuperview().offset(-16)
         }
-    }
-    
-    private func bind() {
-        bindTextInputView()
-    }
-    
-    private func bindTextInputView() {
-        textInputView.textPublisher
-            .sink { [unowned self] text in
-                guard let text = text else { return }
-                textInputView.configurePlaceholderText(with: text.isEmpty)
-            }
-            .store(in: &cancellables)
     }
 }
 
