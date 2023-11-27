@@ -78,5 +78,14 @@ class ChatListViewController: UIViewController {
     
     private func bindTableView() {
         viewModel.setupChatTableView(chatTableView)
+        
+        chatTableView.didSelectRowPublisher
+            .sink { [weak self] index in
+                print("\(index)번째 리스트 탭 >>> ")
+                let viewModel = ChatContentViewModel()
+                let chatContentVC = ChatContentViewController(viewModel: viewModel)
+                self?.navigationController?.pushViewController(chatContentVC, animated: true)
+            }
+            .store(in: &cancellables)
     }
 }

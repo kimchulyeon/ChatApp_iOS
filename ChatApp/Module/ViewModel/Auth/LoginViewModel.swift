@@ -7,7 +7,6 @@
 
 import UIKit
 import Combine
-import CombineCocoa
 import FirebaseAuth
 
 class LoginViewModel {
