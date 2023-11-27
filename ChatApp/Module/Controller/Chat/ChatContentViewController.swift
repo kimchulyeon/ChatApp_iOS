@@ -7,9 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class ChatContentViewController: UIViewController {
     //MARK: - properties
+    private var cancellables = Set<AnyCancellable>()
     private let viewModel: ChatContentViewModel
     
     private lazy var chatContentCollectionView: UICollectionView = {
@@ -18,6 +20,10 @@ class ChatContentViewController: UIViewController {
         cv.register(ChatContentCell.self, forCellWithReuseIdentifier: ChatContentCell.identifier)
         return cv
     }()
+    
+    private let chatInputView = ChatInputView()
+    
+    private var chatInputViewBottomConstraint: Constraint!
     
     
     //MARK: - Lifecycle
@@ -32,19 +38,57 @@ class ChatContentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupNotificationCenter()
         setupUI()
         bind()
     }
     
     
     //MARK: - method
+    private func setupNotificationCenter() {
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification, object: nil)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] notification in
+                guard let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height else { return }
+                let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.25
+                
+                self?.chatInputViewBottomConstraint.update(offset: -keyboardHeight)
+                UIView.animate(withDuration: duration) {
+                    self?.view.layoutIfNeeded()
+                }
+                
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification, object: nil)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] notification in
+                let duration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.25
+                self?.chatInputViewBottomConstraint?.update(offset: 0)
+
+                 UIView.animate(withDuration: duration) {
+                     self?.view.layoutIfNeeded()
+                 }
+            }
+            .store(in: &cancellables)
+    }
+    
     private func setupUI() {
         view.backgroundColor = ThemeColor.bg
         
         view.addSubview(chatContentCollectionView)
+        view.addSubview(chatInputView)
+        
         chatContentCollectionView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(chatInputView.snp.top)
+        }
+        
+        chatInputView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            chatInputViewBottomConstraint = make.bottom.equalTo(view.safeAreaLayoutGuide).constraint
+            chatInputViewBottomConstraint.activate()
         }
     }
     
@@ -54,6 +98,12 @@ class ChatContentViewController: UIViewController {
     
     private func bindCollectionView() {
         viewModel.setupCollectionView(chatContentCollectionView)
+        
+        chatContentCollectionView.didSelectItemPublisher
+            .sink { [unowned self] _ in
+                view.endEditing(true)
+            }
+            .store(in: &cancellables)
     }
     
     private func setupCollectionViewLayout() -> UICollectionViewLayout {
